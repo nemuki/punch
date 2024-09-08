@@ -1,5 +1,5 @@
 {
-  "name": "sem",
+  "name": "punch",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -13,29 +13,29 @@
     "check": "biome check .",
     "lint": "biome lint .",
     "format": "biome format .",
-    "check:fix": "biome check --apply .",
-    "lint:fix": "biome lint --apply .",
+    "check:fix": "biome check --write .",
+    "lint:fix": "biome lint --write .",
     "format:fix": "biome format --write .",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@mantine/core": "^7.8.1",
-    "@mantine/form": "^7.8.1",
-    "@mantine/hooks": "^7.8.1",
-    "@mantine/notifications": "^7.10.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "@mantine/core": "^7.12.2",
+    "@mantine/form": "^7.12.2",
+    "@mantine/hooks": "^7.12.2",
+    "@mantine/notifications": "^7.12.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.8.0",
-    "@slack/web-api": "^7.0.4",
-    "@types/react": "^18.2.66",
-    "@types/react-dom": "^18.2.22",
-    "@vitejs/plugin-react": "^4.2.1",
-    "postcss": "^8.4.38",
-    "postcss-preset-mantine": "^1.15.0",
+    "@biomejs/biome": "1.8.3",
+    "@slack/web-api": "^7.4.0",
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "postcss": "^8.4.45",
+    "postcss-preset-mantine": "^1.17.0",
     "postcss-simple-vars": "^7.0.1",
-    "typescript": "^5.2.2",
-    "vite": "^5.2.0"
+    "typescript": "^5.5.4",
+    "vite": "^5.4.3"
   }
 }
