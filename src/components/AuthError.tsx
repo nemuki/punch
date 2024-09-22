@@ -23,6 +23,7 @@ export const AuthError: FC<Props> = (props: Props) => {
           リトライ（だいたいこっちで治る）
         </Button>
         <Button
+          color={'red'}
           onClick={() => {
             handleRemoveLocalStorageSlackOauthToken()
           }}
