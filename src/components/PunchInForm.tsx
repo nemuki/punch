@@ -22,8 +22,14 @@ export const PunchInForm: FC<Props> = (props: Props) => {
   return (
     <form onSubmit={props.punchInForm.onSubmit(props.handlePunchIn)}>
       <Stack>
+        <Textarea
+          label="追加メッセージ"
+          description={'追加のメッセージを入力できます'}
+          key={props.punchInForm.key('additionalMessage')}
+          {...props.punchInForm.getInputProps('additionalMessage')}
+        />
         <Checkbox
-          description={''}
+          description={'出勤時は8.5時間後、退勤時は24時に削除されます'}
           label={'ステータス絵文字を変更する'}
           key={props.punchInForm.key('changeStatusEmoji')}
           {...props.punchInForm.getInputProps('changeStatusEmoji')}
@@ -34,12 +40,6 @@ export const PunchInForm: FC<Props> = (props: Props) => {
           key={props.punchInForm.key('attendance')}
           {...props.punchInForm.getInputProps('attendance')}
         ></Checkbox>
-        <Textarea
-          label="追加メッセージ"
-          description={'追加のメッセージを入力できます'}
-          key={props.punchInForm.key('additionalMessage')}
-          {...props.punchInForm.getInputProps('additionalMessage')}
-        />
         <Group grow>
           <Button
             type={'submit'}
