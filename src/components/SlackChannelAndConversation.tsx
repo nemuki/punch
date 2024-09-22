@@ -1,9 +1,19 @@
-import { Box, Card, Code, Skeleton, Stack, Text, Title } from '@mantine/core'
+import {
+  Anchor,
+  Box,
+  Card,
+  Code,
+  Skeleton,
+  Stack,
+  Text,
+  Title,
+} from '@mantine/core'
+import { ConversationsInfoResponse } from '@slack/web-api'
 import { MessageElement } from '@slack/web-api/dist/types/response/ConversationsHistoryResponse'
 import React, { FC } from 'react'
 
 type Props = {
-  channelName?: string
+  conversationsInfo?: ConversationsInfoResponse
   conversations?: MessageElement
   isFetching: boolean
 }
@@ -15,6 +25,8 @@ type CardTemplateProps = {
 
 type ChannelProps = {
   channelName?: string
+  channelId?: string
+  workspaceId?: string
 }
 
 type ConversationsProps = {
@@ -28,7 +40,11 @@ export const SlackChannelAndConversation: FC<Props> = (props: Props) => {
         <Title order={2} size={'h5'}>
           Slackチャンネル / スレッド
         </Title>
-        <Channel channelName={props.channelName} />
+        <Channel
+          channelName={props.conversationsInfo?.channel?.name}
+          channelId={props.conversationsInfo?.channel?.id}
+          workspaceId={props.conversationsInfo?.channel?.context_team_id}
+        />
         <Conversations conversations={props.conversations} />
       </Stack>
     </Skeleton>
@@ -54,6 +70,7 @@ const CardTemplate: FC<CardTemplateProps> = (props: CardTemplateProps) => {
 
 const Channel: FC<ChannelProps> = (props: ChannelProps) => {
   const title = '投稿するチャンネル'
+  const url = `https://app.slack.com/client/${props.workspaceId}/${props.channelId}`
 
   if (props.channelName === undefined) {
     return (
@@ -65,7 +82,13 @@ const Channel: FC<ChannelProps> = (props: ChannelProps) => {
     )
   }
 
-  return <CardTemplate title={title}>{props.channelName}</CardTemplate>
+  return (
+    <CardTemplate title={title}>
+      <Anchor href={url} target={'_blank'} fw={700}>
+        # {props.channelName}
+      </Anchor>
+    </CardTemplate>
+  )
 }
 
 const Conversations: FC<ConversationsProps> = (props: ConversationsProps) => {

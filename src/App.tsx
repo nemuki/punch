@@ -249,7 +249,7 @@ function App() {
       <Grid.Col span={6}>
         <Stack>
           <SlackChannelAndConversation
-            channelName={conversationsInfo?.channel?.name}
+            conversationsInfo={conversationsInfo}
             conversations={filteredConversations}
             isFetching={isConversationsFetching}
           />
