@@ -5,10 +5,17 @@ import {
   OauthV2AccessResponse,
   UsersProfileGetResponse,
 } from '@slack/web-api'
-import { env } from '../utils'
+import { env } from '../../utils'
 
 const slackApiBaseUrl = 'https://slack.com/api'
 
+/**
+ * Slackの oauth.v2.access APIを呼び出す
+ * https://api.slack.com/methods/oauth.v2.access
+ *
+ * @param grantType
+ * @param token
+ */
 export async function fetchToken(
   grantType: 'authorization_code' | 'refresh_token',
   token: string,
@@ -37,6 +44,12 @@ export async function fetchToken(
   return response.json()
 }
 
+/**
+ * Slackの auth.revoke APIを呼び出す
+ * https://api.slack.com/methods/auth.revoke
+ *
+ * @param accessToken
+ */
 export const revokeToken = async (
   accessToken: string,
 ): Promise<AuthRevokeResponse> => {
@@ -49,6 +62,12 @@ export const revokeToken = async (
   })
 }
 
+/**
+ * Slackの users.profile.get APIを呼び出す
+ * https://api.slack.com/methods/users.profile.get
+ *
+ * @param accessToken
+ */
 export const fetchUserProfile = async (
   accessToken: string,
 ): Promise<UsersProfileGetResponse> => {
@@ -63,6 +82,13 @@ export const fetchUserProfile = async (
   return response.json()
 }
 
+/**
+ * Slackの conversations.history APIを呼び出す
+ * https://api.slack.com/methods/conversations.history
+ *
+ * @param accessToken
+ * @param channelId
+ */
 export const fetchConversationsHistory = async (
   accessToken: string,
   channelId: string,
@@ -85,6 +111,13 @@ export const fetchConversationsHistory = async (
   return response.json()
 }
 
+/**
+ * Slackの conversations.info APIを呼び出す
+ * https://api.slack.com/methods/conversations.info
+ *
+ * @param accessToken
+ * @param channelId
+ */
 export const fetchConversationsInfo = async (
   accessToken: string,
   channelId: string,
@@ -101,6 +134,15 @@ export const fetchConversationsInfo = async (
   return response.json()
 }
 
+/**
+ * Slackの chat.postMessage APIを呼び出す
+ * https://api.slack.com/methods/chat.postMessage
+ *
+ * @param accessToken
+ * @param channelId
+ * @param message
+ * @param threadTs
+ */
 export const chatPostMessage = async (
   accessToken: string,
   channelId: string,

@@ -19,7 +19,7 @@ import {
   chatPostMessage,
   fetchConversationsHistory,
   fetchConversationsInfo,
-} from './infra/slackApi.ts'
+} from './infra/api/slack.ts'
 import {
   AppSettings,
   Conversations,
