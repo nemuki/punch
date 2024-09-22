@@ -39,6 +39,13 @@ function App() {
     handleRemoveLocalStorageSlackOauthToken,
   } = useAuth()
 
+  // State
+  const [conversationsHistory, setConversationsHistory] = useState<
+    ConversationsHistoryResponse | undefined
+  >(undefined)
+  const [conversationsInfo, setConversationsInfo] = useState<
+    ConversationsInfoResponse | undefined
+  >(undefined)
   const [localStorageAppSettings, setLocalStorageAppSettings] =
     useLocalStorage<AppSettings>({
       key: 'appSettings',
@@ -48,13 +55,7 @@ function App() {
       }),
     })
 
-  const [conversationsHistory, setConversationsHistory] = useState<
-    ConversationsHistoryResponse | undefined
-  >(undefined)
-  const [conversationsInfo, setConversationsInfo] = useState<
-    ConversationsInfoResponse | undefined
-  >(undefined)
-
+  // form
   const form = useForm<Conversations>({
     mode: 'uncontrolled',
     initialValues: localStorageAppSettings.conversations,
