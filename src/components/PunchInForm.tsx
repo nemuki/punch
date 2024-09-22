@@ -14,13 +14,13 @@ import { PunchInSettings } from '../types'
 
 type Props = {
   punchInForm: UseFormReturnType<PunchInSettings>
-  handlePunchIn: (values: PunchInSettings) => void
+  handleSubmitPunchInForm: (values: PunchInSettings) => void
   getWorkStatus: (attendance: boolean) => string
 }
 
 export const PunchInForm: FC<Props> = (props: Props) => {
   return (
-    <form onSubmit={props.punchInForm.onSubmit(props.handlePunchIn)}>
+    <form onSubmit={props.punchInForm.onSubmit(props.handleSubmitPunchInForm)}>
       <Stack>
         <Textarea
           label="追加メッセージ"
@@ -37,8 +37,8 @@ export const PunchInForm: FC<Props> = (props: Props) => {
         <Checkbox
           description={'デフォルトはテレワーク'}
           label={'出社時はチェック'}
-          key={props.punchInForm.key('attendance')}
-          {...props.punchInForm.getInputProps('attendance')}
+          key={props.punchInForm.key('inOffice')}
+          {...props.punchInForm.getInputProps('inOffice')}
         ></Checkbox>
         <Group grow>
           <Button
@@ -70,7 +70,7 @@ export const PunchInForm: FC<Props> = (props: Props) => {
         </Title>
         <Card withBorder>
           <Text>
-            {props.getWorkStatus(props.punchInForm.values.attendance)}
+            {props.getWorkStatus(props.punchInForm.values.inOffice)}
             開始 / 終了します
           </Text>
           <Text inherit style={{ whiteSpace: 'pre-wrap' }}>

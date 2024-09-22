@@ -1,9 +1,9 @@
 export type AppSettings = {
-  conversations: Conversations
-  status: StatusEmojiSettings
+  conversations: Conversation
+  status: StatusEmojiSetting
 }
 
-export type Conversations = {
+export type Conversation = {
   channelId: string
   searchMessage: string
 }
@@ -14,14 +14,14 @@ export type WorkStatus = {
   leave: string
 }
 
-export type StatusEmojiSettings = {
+export type StatusEmojiSetting = {
   emoji: WorkStatus
   text: WorkStatus
 }
 
 export type PunchInSettings = {
   changeStatusEmoji: boolean
-  attendance: boolean
+  inOffice: boolean
   additionalMessage: string
   punchIn?: 'start' | 'end'
 }

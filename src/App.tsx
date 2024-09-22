@@ -1,6 +1,10 @@
 import { Button, Grid, Stack } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { readLocalStorageValue, useLocalStorage } from '@mantine/hooks'
+import {
+  readLocalStorageValue,
+  useDisclosure,
+  useLocalStorage,
+} from '@mantine/hooks'
 import {
   ConversationsHistoryResponse,
   ConversationsInfoResponse,
@@ -21,9 +25,9 @@ import {
 } from './infra/repository/slack.ts'
 import {
   AppSettings,
-  Conversations,
+  Conversation,
   PunchInSettings,
-  StatusEmojiSettings,
+  StatusEmojiSetting,
 } from './types'
 import { applicationConstants, isLocalStorageValid } from './utils'
 
@@ -31,7 +35,10 @@ function App() {
   const { authErrorMessage, slackOauthToken } = useAuth()
 
   // State
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [
+    isSettingsOpen,
+    { toggle: toggleSettingsOpen, open: setIsSettingsOpen },
+  ] = useDisclosure(false)
   const [hasLocalStorageError, setHasLocalStorageError] = useState(false)
   const [isConversationsFetching, setIsConversationsFetching] = useState(true)
   const [conversationsHistory, setConversationsHistory] = useState<
@@ -53,11 +60,11 @@ function App() {
   })
 
   // form
-  const conversationSettingForm = useForm<Conversations>({
+  const conversationSettingForm = useForm<Conversation>({
     mode: 'uncontrolled',
     initialValues: localStorageAppSettings.conversations,
   })
-  const statusEmojiSettingsForm = useForm<StatusEmojiSettings>({
+  const statusEmojiSettingForm = useForm<StatusEmojiSetting>({
     mode: 'uncontrolled',
     initialValues: localStorageAppSettings.status,
   })
@@ -65,7 +72,7 @@ function App() {
     mode: 'controlled',
     initialValues: {
       changeStatusEmoji: false,
-      attendance: false,
+      inOffice: false,
       additionalMessage: '',
       punchIn: undefined,
     },
@@ -85,25 +92,25 @@ function App() {
     attendance ? '業務' : 'テレワーク'
 
   const createPunchInStartMessage = (values: PunchInSettings) => {
-    const baseMessage = getWorkStatus(values.attendance)
+    const baseMessage = getWorkStatus(values.inOffice)
     return `${baseMessage}開始します\n${values.additionalMessage}`
   }
 
   const createPunchInEndMessage = (values: PunchInSettings) => {
-    const baseMessage = getWorkStatus(values.attendance)
+    const baseMessage = getWorkStatus(values.inOffice)
     return `${baseMessage}終了します\n${values.additionalMessage}`
   }
 
   const handleSubmitConversationSettingForm = (
     values: typeof conversationSettingForm.values,
   ) => {
-    getConversations(
-      values.channelId,
+    getConversations({
+      channelId: values.channelId,
       setConversationsHistory,
       setConversationsInfo,
-      slackOauthToken.accessToken,
-      values.searchMessage,
-    )
+      accessToken: slackOauthToken.accessToken,
+      searchMessage: values.searchMessage,
+    })
 
     setLocalStorageAppSettings((prev) => ({
       ...prev,
@@ -112,7 +119,7 @@ function App() {
   }
 
   const handleSubmitStatusEmojiSettingsForm = (
-    values: typeof statusEmojiSettingsForm.values,
+    values: typeof statusEmojiSettingForm.values,
   ) => {
     setLocalStorageAppSettings((prev) => ({
       ...prev,
@@ -122,12 +129,8 @@ function App() {
 
   /**
    * 出勤時の関数
-   *
-   * ステータス絵文字を変更する場合は、絵文字を変更する
-   * メッセージを追加する場合は、メッセージを追加する
-   * chatPostMessageを呼び出す
    */
-  const handlePunchIn = (values: typeof punchInForm.values) => {
+  const handleSubmitPunchInForm = (values: typeof punchInForm.values) => {
     if (values.punchIn === undefined) {
       return
     }
@@ -147,47 +150,47 @@ function App() {
       // 出社時の処理
       if (values.changeStatusEmoji) {
         // ステータス絵文字を変更する
-        if (values.attendance) {
-          updateEmoji(
-            localStorageAppSettings.status.emoji.office,
-            localStorageAppSettings.status.text.office,
-            nineHoursLaterUnixTime,
-            slackOauthToken.accessToken,
-          )
+        if (values.inOffice) {
+          updateEmoji({
+            statusEmoji: localStorageAppSettings.status.emoji.office,
+            statusText: localStorageAppSettings.status.text.office,
+            statusExpiration: nineHoursLaterUnixTime,
+            accessToken: slackOauthToken.accessToken,
+          })
         } else {
-          updateEmoji(
-            localStorageAppSettings.status.emoji.telework,
-            localStorageAppSettings.status.text.telework,
-            nineHoursLaterUnixTime,
-            slackOauthToken.accessToken,
-          )
+          updateEmoji({
+            statusEmoji: localStorageAppSettings.status.emoji.telework,
+            statusText: localStorageAppSettings.status.text.telework,
+            statusExpiration: nineHoursLaterUnixTime,
+            accessToken: slackOauthToken.accessToken,
+          })
         }
       }
 
-      postMessage(
+      postMessage({
         channelId,
-        createPunchInStartMessage(values),
-        filteredConversations?.ts,
-        slackOauthToken.accessToken,
-      )
+        message: createPunchInStartMessage(values),
+        threadTs: filteredConversations?.ts,
+        accessToken: slackOauthToken.accessToken,
+      })
     } else if (values.punchIn === 'end') {
       // 退勤時の処理
       if (values.changeStatusEmoji) {
         // ステータス絵文字を変更する
-        updateEmoji(
-          localStorageAppSettings.status.emoji.leave,
-          localStorageAppSettings.status.text.leave,
-          midnightUnixTime,
-          slackOauthToken.accessToken,
-        )
+        updateEmoji({
+          statusEmoji: localStorageAppSettings.status.emoji.leave,
+          statusText: localStorageAppSettings.status.text.leave,
+          statusExpiration: midnightUnixTime,
+          accessToken: slackOauthToken.accessToken,
+        })
       }
 
-      postMessage(
+      postMessage({
         channelId,
-        createPunchInEndMessage(values),
-        filteredConversations?.ts,
-        slackOauthToken.accessToken,
-      )
+        message: createPunchInEndMessage(values),
+        threadTs: filteredConversations?.ts,
+        accessToken: slackOauthToken.accessToken,
+      })
     }
   }
 
@@ -197,16 +200,17 @@ function App() {
   useEffect(() => {
     ;(async () => {
       if (conversationSettingForm.values.channelId) {
-        await getConversations(
-          conversationSettingForm.values.channelId,
+        await getConversations({
+          channelId: conversationSettingForm.values.channelId,
           setConversationsHistory,
           setConversationsInfo,
-          slackOauthToken.accessToken,
-          conversationSettingForm.values.searchMessage,
-        )
+          accessToken: slackOauthToken.accessToken,
+          searchMessage: conversationSettingForm.values.searchMessage,
+        })
       } else {
-        setIsSettingsOpen(true)
+        setIsSettingsOpen()
       }
+
       setIsConversationsFetching(false)
 
       if (!isLocalStorageValid(localStorageAppSettings)) {
@@ -251,12 +255,13 @@ function App() {
           />
           <SlackSettings
             isOpen={isSettingsOpen}
+            toggleSettingsOpen={toggleSettingsOpen}
             conversationSettingForm={conversationSettingForm}
             handleSubmitConversationSettingForm={
               handleSubmitConversationSettingForm
             }
-            statusEmojiSettingsForm={statusEmojiSettingsForm}
-            handleSubmitStatusEmojiSettingsForm={
+            statusEmojiSettingForm={statusEmojiSettingForm}
+            handleSubmitStatusEmojiSettingForm={
               handleSubmitStatusEmojiSettingsForm
             }
           />
@@ -265,7 +270,7 @@ function App() {
       <Grid.Col span={6}>
         <PunchInForm
           punchInForm={punchInForm}
-          handlePunchIn={handlePunchIn}
+          handleSubmitPunchInForm={handleSubmitPunchInForm}
           getWorkStatus={getWorkStatus}
         />
       </Grid.Col>

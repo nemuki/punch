@@ -1,34 +1,32 @@
 import { Button, Collapse, Stack } from '@mantine/core'
 import { UseFormReturnType } from '@mantine/form'
-import { useDisclosure } from '@mantine/hooks'
 import { FC } from 'react'
-import { Conversations, StatusEmojiSettings } from '../types'
+import { Conversation, StatusEmojiSetting } from '../types'
 import { SlackConversationSetting } from './SlackConversationSetting.tsx'
 import { SlackEmojiSetting } from './SlackEmojiSetting.tsx'
 
 type Props = {
   isOpen: boolean
-  conversationSettingForm: UseFormReturnType<Conversations>
-  handleSubmitConversationSettingForm: (values: Conversations) => void
-  statusEmojiSettingsForm: UseFormReturnType<StatusEmojiSettings>
-  handleSubmitStatusEmojiSettingsForm: (values: StatusEmojiSettings) => void
+  toggleSettingsOpen: () => void
+  conversationSettingForm: UseFormReturnType<Conversation>
+  handleSubmitConversationSettingForm: (values: Conversation) => void
+  statusEmojiSettingForm: UseFormReturnType<StatusEmojiSetting>
+  handleSubmitStatusEmojiSettingForm: (values: StatusEmojiSetting) => void
 }
 
 export const SlackSettings: FC<Props> = (props: Props) => {
-  const [opened, { toggle }] = useDisclosure(props.isOpen)
-
   return (
     <>
-      <Button onClick={toggle}>Slack設定を開く</Button>
-      <Collapse in={opened}>
+      <Button onClick={props.toggleSettingsOpen}>Slack設定を開く</Button>
+      <Collapse in={props.isOpen}>
         <Stack>
           <SlackConversationSetting
             conversationSettingForm={props.conversationSettingForm}
             handleSubmit={props.handleSubmitConversationSettingForm}
           />
           <SlackEmojiSetting
-            statusEmojiSettingsForm={props.statusEmojiSettingsForm}
-            handleSubmit={props.handleSubmitStatusEmojiSettingsForm}
+            statusEmojiSettingsForm={props.statusEmojiSettingForm}
+            handleSubmit={props.handleSubmitStatusEmojiSettingForm}
           />
         </Stack>
       </Collapse>

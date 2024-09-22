@@ -10,11 +10,11 @@ import {
 } from '@mantine/core'
 import { UseFormReturnType } from '@mantine/form'
 import { FC } from 'react'
-import { StatusEmojiSettings } from '../types'
+import { StatusEmojiSetting } from '../types'
 
 type Props = {
-  statusEmojiSettingsForm: UseFormReturnType<StatusEmojiSettings>
-  handleSubmit: (values: StatusEmojiSettings) => void
+  statusEmojiSettingsForm: UseFormReturnType<StatusEmojiSetting>
+  handleSubmit: (values: StatusEmojiSetting) => void
 }
 
 export const SlackEmojiSetting: FC<Props> = (props: Props) => {
@@ -54,7 +54,7 @@ export const SlackEmojiSetting: FC<Props> = (props: Props) => {
 type StatusEmojiInputProps = {
   label: string
   emojiKey: string
-  statusEmojiSettingsForm: UseFormReturnType<StatusEmojiSettings>
+  statusEmojiSettingsForm: UseFormReturnType<StatusEmojiSetting>
 }
 
 const StatusEmojiInput: FC<StatusEmojiInputProps> = (

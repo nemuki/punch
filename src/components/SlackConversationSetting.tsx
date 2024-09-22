@@ -1,11 +1,11 @@
 import { Button, Card, Stack, TextInput, Title } from '@mantine/core'
 import { UseFormReturnType } from '@mantine/form'
 import { FC } from 'react'
-import { Conversations } from '../types'
+import { Conversation } from '../types'
 
 type Props = {
-  conversationSettingForm: UseFormReturnType<Conversations>
-  handleSubmit: (values: Conversations) => void
+  conversationSettingForm: UseFormReturnType<Conversation>
+  handleSubmit: (values: Conversation) => void
 }
 
 export const SlackConversationSetting: FC<Props> = (props: Props) => {

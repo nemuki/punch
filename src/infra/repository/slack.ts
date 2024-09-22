@@ -10,38 +10,44 @@ import {
   updateStatusEmoji,
 } from '../api/slack.ts'
 
-export const getConversations = async (
-  channelId: string,
-  setConversationsHistory: (value: ConversationsHistoryResponse) => void,
-  setConversationsInfo: (value: ConversationsInfoResponse) => void,
-  accessToken?: string,
-  searchMessage?: string,
-) => {
-  const conversationsInfo = await getConversationsInfo(channelId, accessToken)
+export const getConversations = async (args: {
+  channelId: string
+  setConversationsHistory: (value: ConversationsHistoryResponse) => void
+  setConversationsInfo: (value: ConversationsInfoResponse) => void
+  accessToken?: string
+  searchMessage?: string
+}) => {
+  const conversationsInfo = await getConversationsInfo({
+    channelId: args.channelId,
+    accessToken: args.accessToken,
+  })
 
   if (conversationsInfo) {
-    setConversationsInfo(conversationsInfo)
+    args.setConversationsInfo(conversationsInfo)
   }
 
-  if (searchMessage) {
-    const conversationsHistory = await getConversationsHistory(
-      channelId,
-      accessToken,
-    )
+  if (args.searchMessage) {
+    const conversationsHistory = await getConversationsHistory({
+      channelId: args.channelId,
+      accessToken: args.accessToken,
+    })
 
     if (conversationsHistory) {
-      setConversationsHistory(conversationsHistory)
+      args.setConversationsHistory(conversationsHistory)
     }
   }
 }
 
-const getConversationsHistory = async (
-  channelId: string,
-  accessToken?: string,
-): Promise<ConversationsHistoryResponse | undefined> => {
-  if (accessToken) {
+const getConversationsHistory = async (args: {
+  channelId: string
+  accessToken?: string
+}): Promise<ConversationsHistoryResponse | undefined> => {
+  if (args.accessToken) {
     try {
-      const response = await fetchConversationsHistory(accessToken, channelId)
+      const response = await fetchConversationsHistory({
+        channelId: args.channelId,
+        accessToken: args.accessToken,
+      })
 
       if (!response.ok) {
         console.error(response.error)
@@ -54,13 +60,16 @@ const getConversationsHistory = async (
   }
 }
 
-const getConversationsInfo = async (
-  channelId: string,
-  accessToken?: string,
-): Promise<ConversationsInfoResponse | undefined> => {
-  if (accessToken) {
+const getConversationsInfo = async (args: {
+  channelId: string
+  accessToken?: string
+}): Promise<ConversationsInfoResponse | undefined> => {
+  if (args.accessToken) {
     try {
-      const response = await fetchConversationsInfo(accessToken, channelId)
+      const response = await fetchConversationsInfo({
+        channelId: args.channelId,
+        accessToken: args.accessToken,
+      })
 
       if (!response.ok) {
         console.error(response.error)
@@ -73,26 +82,26 @@ const getConversationsInfo = async (
   }
 }
 
-export const postMessage = async (
-  channelId: string,
-  message: string,
-  threadTs?: string,
-  accessToken?: string,
-) => {
-  if (accessToken) {
+export const postMessage = async (args: {
+  channelId: string
+  message: string
+  threadTs?: string
+  accessToken?: string
+}) => {
+  if (args.accessToken) {
     try {
-      const response = await chatPostMessage(
-        accessToken,
-        channelId,
-        message,
-        threadTs,
-      )
+      const response = await chatPostMessage({
+        accessToken: args.accessToken,
+        channelId: args.channelId,
+        message: args.message,
+        threadTs: args.threadTs,
+      })
 
       if (response.ok) {
         console.info(response)
         notifications.show({
           title: 'メッセージ送信完了',
-          message: message,
+          message: args.message,
           color: 'teal',
         })
       } else {
@@ -114,20 +123,20 @@ export const postMessage = async (
   }
 }
 
-export const updateEmoji = async (
-  statusEmoji: string,
-  statusText: string,
-  statusExpiration: number,
-  accessToken?: string,
-) => {
-  if (accessToken) {
+export const updateEmoji = async (args: {
+  statusEmoji: string
+  statusText: string
+  statusExpiration: number
+  accessToken?: string
+}) => {
+  if (args.accessToken) {
     try {
-      await updateStatusEmoji(
-        accessToken,
-        statusEmoji,
-        statusText,
-        statusExpiration,
-      )
+      await updateStatusEmoji({
+        statusEmoji: args.statusEmoji,
+        statusText: args.statusText,
+        statusExpiration: args.statusExpiration,
+        accessToken: args.accessToken,
+      })
     } catch (error) {
       console.error(error)
     }

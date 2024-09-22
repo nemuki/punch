@@ -115,9 +115,9 @@ export const AuthProvider: FC<AuthProviderProps> = (
     const errorMessage = 'トークン削除処理でエラーが発生しました'
 
     try {
-      const response = await revokeToken(
-        localStorageSlackOauthToken.accessToken,
-      )
+      const response = await revokeToken({
+        accessToken: localStorageSlackOauthToken.accessToken,
+      })
 
       if (!response.ok) {
         handleSetError(errorMessage, response.error)
@@ -142,10 +142,10 @@ export const AuthProvider: FC<AuthProviderProps> = (
     const errorMessage = '認可コード取得処理でエラーが発生しました'
 
     try {
-      const response = await fetchToken(
-        'authorization_code',
-        oauthAuthorizationCode,
-      )
+      const response = await fetchToken({
+        grantType: 'authorization_code',
+        token: oauthAuthorizationCode,
+      })
 
       if (!response.ok) {
         setAuthErrorMessage(`${errorMessage} ${response.error}`)
@@ -209,7 +209,10 @@ export const AuthProvider: FC<AuthProviderProps> = (
     const errorMessage = 'リフレッシュトークン取得処理でエラーが発生しました'
 
     try {
-      const response = await fetchToken('refresh_token', refreshToken)
+      const response = await fetchToken({
+        grantType: 'refresh_token',
+        token: refreshToken,
+      })
 
       if (!response.ok) {
         handleSetError(errorMessage, response.error)
@@ -243,9 +246,9 @@ export const AuthProvider: FC<AuthProviderProps> = (
     const errorMessage = 'ユーザ情報取得処理でエラーが発生しました'
 
     try {
-      const response = await fetchUserProfile(
-        localStorageSlackOauthToken.accessToken,
-      )
+      const response = await fetchUserProfile({
+        accessToken: localStorageSlackOauthToken.accessToken,
+      })
 
       if (!response.ok) {
         handleSetError(errorMessage, response.error)

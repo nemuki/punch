@@ -1,7 +1,7 @@
 export type {
   AppSettings,
-  Conversations,
+  Conversation,
   WorkStatus,
   PunchInSettings,
-  StatusEmojiSettings,
+  StatusEmojiSetting,
 } from './appSettings.ts'
