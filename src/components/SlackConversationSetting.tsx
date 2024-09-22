@@ -12,7 +12,7 @@ export const SlackConversationSetting: FC<Props> = (props: Props) => {
   return (
     <form onSubmit={props.conversationSettingForm.onSubmit(props.handleSubmit)}>
       <Stack>
-        <Title order={2} size={'sm'}>
+        <Title order={3} size={'sm'}>
           Slackチャンネル / スレッド検索
         </Title>
         <Card withBorder>
