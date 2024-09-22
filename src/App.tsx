@@ -1,7 +1,6 @@
 import { Button, Grid, Stack } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { readLocalStorageValue, useLocalStorage } from '@mantine/hooks'
-import { notifications } from '@mantine/notifications'
 import {
   ConversationsHistoryResponse,
   ConversationsInfoResponse,
@@ -15,11 +14,7 @@ import {
   SlackSettings,
 } from './components'
 import { useAuth } from './hooks/useAuth.tsx'
-import {
-  chatPostMessage,
-  fetchConversationsHistory,
-  fetchConversationsInfo,
-} from './infra/api/slack.ts'
+import { getConversations, postMessage } from './infra/repository/slack.ts'
 import {
   AppSettings,
   Conversations,
@@ -82,92 +77,6 @@ function App() {
       )[0]
   }, [conversationsHistory])
 
-  const getConversationsHistory = async (channelId: string) => {
-    if (slackOauthToken.accessToken) {
-      try {
-        const response = await fetchConversationsHistory(
-          slackOauthToken.accessToken,
-          channelId,
-        )
-
-        if (!response.ok) {
-          console.error(response.error)
-        }
-
-        setConversationsHistory(response)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-  }
-
-  const getConversationsInfo = async (channelId: string) => {
-    if (slackOauthToken.accessToken) {
-      try {
-        const response = await fetchConversationsInfo(
-          slackOauthToken.accessToken,
-          channelId,
-        )
-
-        if (!response.ok) {
-          console.error(response.error)
-        }
-
-        setConversationsInfo(response)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-  }
-
-  const getConversations = async (
-    values: typeof conversationSettingForm.values,
-  ) => {
-    await getConversationsInfo(values.channelId)
-
-    if (values.searchMessage) {
-      await getConversationsHistory(values.channelId)
-    }
-
-    setIsConversationsFetching(false)
-  }
-
-  const postMessage = async (channelId: string, message: string) => {
-    if (slackOauthToken.accessToken) {
-      try {
-        const response = await chatPostMessage(
-          slackOauthToken.accessToken,
-          channelId,
-          message,
-          filteredConversations?.ts,
-        )
-
-        if (response.ok) {
-          console.info(response)
-          notifications.show({
-            title: 'メッセージ送信完了',
-            message: message,
-            color: 'teal',
-          })
-        } else {
-          console.error(response)
-          notifications.show({
-            title: 'メッセージ送信エラー',
-            message: 'Slack メッセージ送信時にエラーが発生しました',
-            color: 'red',
-          })
-        }
-      } catch (error) {
-        console.error(error)
-        notifications.show({
-          title: 'メッセージ送信エラー',
-          message: 'Slack メッセージ送信時にエラーが発生しました',
-          color: 'red',
-        })
-      }
-    }
-  }
-
   const getWorkStatus = (attendance: boolean): string =>
     attendance ? '業務' : 'テレワーク'
 
@@ -184,7 +93,13 @@ function App() {
   const handleSubmitConversationSettingForm = (
     values: typeof conversationSettingForm.values,
   ) => {
-    getConversations(values)
+    getConversations(
+      values.channelId,
+      setConversationsHistory,
+      setConversationsInfo,
+      slackOauthToken.accessToken,
+      values.searchMessage,
+    )
 
     setLocalStorageAppSettings((prev) => ({
       ...prev,
@@ -221,16 +136,24 @@ function App() {
         // ステータス絵文字を変更する
       }
 
-      // postMessageを呼び出す
-      postMessage(channelId, createPunchInStartMessage(values))
+      postMessage(
+        channelId,
+        createPunchInStartMessage(values),
+        filteredConversations?.ts,
+        slackOauthToken.accessToken,
+      )
     } else if (values.punchIn === 'end') {
       // 退勤時の処理
       if (values.changeStatusEmoji) {
         // ステータス絵文字を変更する
       }
 
-      // postMessageを呼び出す
-      postMessage(channelId, createPunchInEndMessage(values))
+      postMessage(
+        channelId,
+        createPunchInEndMessage(values),
+        filteredConversations?.ts,
+        slackOauthToken.accessToken,
+      )
     }
   }
 
@@ -238,16 +161,24 @@ function App() {
    * 初回アクセス時の処理
    */
   useEffect(() => {
-    if (conversationSettingForm.values.channelId) {
-      getConversations(conversationSettingForm.values)
-    } else {
-      setIsSettingsOpen(true)
+    ;(async () => {
+      if (conversationSettingForm.values.channelId) {
+        await getConversations(
+          conversationSettingForm.values.channelId,
+          setConversationsHistory,
+          setConversationsInfo,
+          slackOauthToken.accessToken,
+          conversationSettingForm.values.searchMessage,
+        )
+      } else {
+        setIsSettingsOpen(true)
+      }
       setIsConversationsFetching(false)
-    }
 
-    if (!isLocalStorageValid(localStorageAppSettings)) {
-      setHasLocalStorageError(true)
-    }
+      if (!isLocalStorageValid(localStorageAppSettings)) {
+        setHasLocalStorageError(true)
+      }
+    })()
   }, [])
 
   // Render
