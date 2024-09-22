@@ -251,6 +251,17 @@ function App() {
   }, [])
 
   // Render
+  if (Object.keys(slackOauthToken).length === 0) {
+    return (
+      <Button
+        component={'a'}
+        href={applicationConstants.slackOauthAuthorizeUrl}
+      >
+        Login with Slack
+      </Button>
+    )
+  }
+
   if (hasLocalStorageError) {
     return (
       <LocalStorageError
@@ -260,55 +271,40 @@ function App() {
     )
   }
 
-  if (Object.keys(slackOauthToken).length === 0) {
-    return (
-      <>
-        <Button
-          component={'a'}
-          href={applicationConstants.slackOauthAuthorizeUrl}
-        >
-          Login with Slack
-        </Button>
-      </>
-    )
-  }
-
   if (authErrorMessage) {
     return <AuthError message={authErrorMessage} />
   }
 
   return (
-    <>
-      <Grid>
-        <Grid.Col span={6}>
-          <Stack>
-            <SlackChannelAndConversation
-              channelName={conversationsInfo?.channel?.name}
-              conversations={filteredConversations}
-              isFetching={isConversationsFetching}
-            />
-            <SlackSettings
-              isOpen={isSettingsOpen}
-              conversationSettingForm={conversationSettingForm}
-              handleSubmitConversationSettingForm={
-                handleSubmitConversationSettingForm
-              }
-              statusEmojiSettingsForm={statusEmojiSettingsForm}
-              handleSubmitStatusEmojiSettingsForm={
-                handleSubmitStatusEmojiSettingsForm
-              }
-            />
-          </Stack>
-        </Grid.Col>
-        <Grid.Col span={6}>
-          <PunchInForm
-            punchInForm={punchInForm}
-            handlePunchIn={handlePunchIn}
-            getWorkStatus={getWorkStatus}
+    <Grid>
+      <Grid.Col span={6}>
+        <Stack>
+          <SlackChannelAndConversation
+            channelName={conversationsInfo?.channel?.name}
+            conversations={filteredConversations}
+            isFetching={isConversationsFetching}
           />
-        </Grid.Col>
-      </Grid>
-    </>
+          <SlackSettings
+            isOpen={isSettingsOpen}
+            conversationSettingForm={conversationSettingForm}
+            handleSubmitConversationSettingForm={
+              handleSubmitConversationSettingForm
+            }
+            statusEmojiSettingsForm={statusEmojiSettingsForm}
+            handleSubmitStatusEmojiSettingsForm={
+              handleSubmitStatusEmojiSettingsForm
+            }
+          />
+        </Stack>
+      </Grid.Col>
+      <Grid.Col span={6}>
+        <PunchInForm
+          punchInForm={punchInForm}
+          handlePunchIn={handlePunchIn}
+          getWorkStatus={getWorkStatus}
+        />
+      </Grid.Col>
+    </Grid>
   )
 }
 
