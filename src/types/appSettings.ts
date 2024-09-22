@@ -1,9 +1,6 @@
 export type AppSettings = {
   conversations: Conversations
-  status?: {
-    emoji: WorkStatus
-    text: WorkStatus
-  }
+  status?: StatusEmojiSettings
 }
 
 export type Conversations = {
@@ -15,6 +12,11 @@ export type WorkStatus = {
   office?: string
   telework?: string
   leave?: string
+}
+
+export type StatusEmojiSettings = {
+  emoji: WorkStatus
+  text: WorkStatus
 }
 
 export type PunchInSettings = {

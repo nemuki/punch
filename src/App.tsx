@@ -21,6 +21,7 @@ import {
   AuthError,
   PunchInForm,
   SlackChannelAndConversation,
+  SlackEmojiSettings,
 } from './components'
 import { useAuth } from './hooks/useAuth.tsx'
 import {
@@ -28,8 +29,12 @@ import {
   fetchConversationsHistory,
   fetchConversationsInfo,
 } from './infra/slackApi.ts'
-import { AppSettings, Conversations, PunchInSettings } from './types'
-import { applicationConstants } from './utils/constant.ts'
+import {
+  AppSettings,
+  Conversations,
+  PunchInSettings,
+  StatusEmojiSettings,
+} from './types'
 
 function App() {
   const { authIsLoading, authErrorMessage, slackOauthToken } = useAuth()
@@ -55,9 +60,9 @@ function App() {
     mode: 'uncontrolled',
     initialValues: localStorageAppSettings.conversations,
   })
-  const form2 = useForm<AppSettings>({
+  const statusEmojiSettingsForm = useForm<StatusEmojiSettings>({
     mode: 'uncontrolled',
-    initialValues: localStorageAppSettings,
+    initialValues: localStorageAppSettings.status,
   })
   const punchInForm = useForm<PunchInSettings>({
     mode: 'controlled',
@@ -181,10 +186,12 @@ function App() {
     }))
   }
 
-  const handleSubmit2 = (values: typeof form2.values) => {
+  const handleSubmitStatusEmojiSettingsForm = (
+    values: typeof statusEmojiSettingsForm.values,
+  ) => {
     setLocalStorageAppSettings((prev) => ({
       ...prev,
-      message: values,
+      status: values,
     }))
   }
 
@@ -296,54 +303,10 @@ function App() {
                 conversations={filteredConversations}
               />
             </Box>
-            <Box>
-              <form onSubmit={form2.onSubmit(handleSubmit2)}>
-                <Stack>
-                  <Title order={2} size={'sm'}>
-                    Slack絵文字設定
-                  </Title>
-                  <Group grow>
-                    <TextInput
-                      label="出社時の絵文字"
-                      key={form2.key('status.emoji.attendance')}
-                      {...form2.getInputProps('status.emoji.attendance')}
-                    />
-                    <TextInput
-                      label="出社時の絵文字メッセージ"
-                      key={form2.key('status.text.attendance')}
-                      {...form2.getInputProps('status.text.attendance')}
-                    />
-                  </Group>
-                  <Group grow>
-                    <TextInput
-                      label="テレワーク時の絵文字"
-                      key={form2.key('status.emoji.telework')}
-                      {...form2.getInputProps('status.emoji.telework')}
-                    />
-                    <TextInput
-                      label="テレワーク時の絵文字メッセージ"
-                      key={form2.key('status.text.telework')}
-                      {...form2.getInputProps('status.text.telework')}
-                    />
-                  </Group>
-                  <Group grow>
-                    <TextInput
-                      label="退勤時の絵文字"
-                      key={form2.key('status.emoji.leave')}
-                      {...form2.getInputProps('status.emoji.leave')}
-                    />
-                    <TextInput
-                      label="退勤時の絵文字メッセージ"
-                      key={form2.key('status.text.leave')}
-                      {...form2.getInputProps('status.text.leave')}
-                    />
-                  </Group>
-                  <Button type={'submit'} w={'fit-content'}>
-                    保存
-                  </Button>
-                </Stack>
-              </form>
-            </Box>
+            <SlackEmojiSettings
+              statusEmojiSettingsForm={statusEmojiSettingsForm}
+              handleSubmit={handleSubmitStatusEmojiSettingsForm}
+            />
           </Stack>
         </Grid.Col>
         <Grid.Col span={6}>
