@@ -1,6 +1,6 @@
 import { AppShell, Container, Group, Title } from '@mantine/core'
 import React, { FC } from 'react'
-import { User } from './components/User.tsx'
+import { User } from './components'
 
 type Props = {
   children: React.ReactNode

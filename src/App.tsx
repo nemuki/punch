@@ -21,7 +21,7 @@ import {
   ConversationsInfoResponse,
 } from '@slack/web-api'
 import { useEffect, useMemo, useState } from 'react'
-import { SlackChannelAndConversation } from './components/SlackChannelAndConversation.tsx'
+import { SlackChannelAndConversation } from './components'
 import { useAuth } from './hooks/useAuth.tsx'
 import {
   chatPostMessage,
