@@ -1,7 +1,5 @@
 import {
-  Box,
   Button,
-  Card,
   Grid,
   Group,
   Loader,
@@ -315,18 +313,10 @@ function App() {
                 </Button>
               </Stack>
             </form>
-            <Box>
-              <Text size={'sm'}>投稿するチャンネル名</Text>
-              <Text span fw={700}>
-                {conversationsInfo?.channel?.name}
-              </Text>
-            </Box>
-            <Box>
-              <Text size={'sm'}>返信するスレッド</Text>
-              <SlackChannelAndConversation
-                conversations={filteredConversations}
-              />
-            </Box>
+            <SlackChannelAndConversation
+              channelName={conversationsInfo?.channel?.name}
+              conversations={filteredConversations}
+            />
             <SlackEmojiSettings
               statusEmojiSettingsForm={statusEmojiSettingsForm}
               handleSubmit={handleSubmitStatusEmojiSettingsForm}
