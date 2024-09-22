@@ -12,7 +12,7 @@ export const Layout: FC<Props> = (props: Props) => {
       <AppShell.Header>
         <Group justify="center" h="100%" px="md">
           <Title order={1} size="h3">
-            Punch
+            Punch 👊
           </Title>
           <User />
         </Group>
