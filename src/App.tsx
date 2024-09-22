@@ -14,7 +14,11 @@ import {
   SlackSettings,
 } from './components'
 import { useAuth } from './hooks/useAuth.tsx'
-import { getConversations, postMessage } from './infra/repository/slack.ts'
+import {
+  getConversations,
+  postMessage,
+  updateEmoji,
+} from './infra/repository/slack.ts'
 import {
   AppSettings,
   Conversations,
@@ -130,10 +134,34 @@ function App() {
 
     const channelId = localStorageAppSettings.conversations.channelId
 
+    const nineHoursLater = new Date()
+    nineHoursLater.setHours(nineHoursLater.getHours() + 9)
+    const nineHoursLaterUnixTime = Math.floor(nineHoursLater.getTime() / 1000)
+
+    const midnight = new Date()
+    midnight.setDate(midnight.getDate() + 1)
+    midnight.setHours(0, 0, 0, 0)
+    const midnightUnixTime = Math.floor(midnight.getTime() / 1000)
+
     if (values.punchIn === 'start') {
       // 出社時の処理
       if (values.changeStatusEmoji) {
         // ステータス絵文字を変更する
+        if (values.attendance) {
+          updateEmoji(
+            localStorageAppSettings.status.emoji.office,
+            localStorageAppSettings.status.text.office,
+            nineHoursLaterUnixTime,
+            slackOauthToken.accessToken,
+          )
+        } else {
+          updateEmoji(
+            localStorageAppSettings.status.emoji.telework,
+            localStorageAppSettings.status.text.telework,
+            nineHoursLaterUnixTime,
+            slackOauthToken.accessToken,
+          )
+        }
       }
 
       postMessage(
@@ -146,6 +174,12 @@ function App() {
       // 退勤時の処理
       if (values.changeStatusEmoji) {
         // ステータス絵文字を変更する
+        updateEmoji(
+          localStorageAppSettings.status.emoji.leave,
+          localStorageAppSettings.status.text.leave,
+          midnightUnixTime,
+          slackOauthToken.accessToken,
+        )
       }
 
       postMessage(

@@ -164,3 +164,34 @@ export const chatPostMessage = async (
     body: formData,
   })
 }
+
+/**
+ * Slackの users.profile.set APIを呼び出す
+ *
+ * @param accessToken
+ * @param statusEmoji
+ * @param statusText
+ * @param statusExpiration
+ */
+export const updateStatusEmoji = async (
+  accessToken: string,
+  statusEmoji: string,
+  statusText: string,
+  statusExpiration: number,
+): Promise<Response> => {
+  const formData = new FormData()
+  formData.append('token', accessToken)
+  formData.append(
+    'profile',
+    JSON.stringify({
+      status_emoji: statusEmoji,
+      status_text: statusText,
+      status_expiration: statusExpiration,
+    }),
+  )
+
+  return fetch(`${slackApiBaseUrl}/users.profile.set`, {
+    method: 'POST',
+    body: formData,
+  })
+}

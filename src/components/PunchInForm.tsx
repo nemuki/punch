@@ -29,7 +29,7 @@ export const PunchInForm: FC<Props> = (props: Props) => {
           {...props.punchInForm.getInputProps('additionalMessage')}
         />
         <Checkbox
-          description={'出勤時は8.5時間後、退勤時は24時に削除されます'}
+          description={'出勤時は9時間後、退勤時は24時に削除されます'}
           label={'ステータス絵文字を変更する'}
           key={props.punchInForm.key('changeStatusEmoji')}
           {...props.punchInForm.getInputProps('changeStatusEmoji')}

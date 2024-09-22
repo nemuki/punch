@@ -7,6 +7,7 @@ import {
   chatPostMessage,
   fetchConversationsHistory,
   fetchConversationsInfo,
+  updateStatusEmoji,
 } from '../api/slack.ts'
 
 export const getConversations = async (
@@ -109,6 +110,26 @@ export const postMessage = async (
         message: 'Slack メッセージ送信時にエラーが発生しました',
         color: 'red',
       })
+    }
+  }
+}
+
+export const updateEmoji = async (
+  statusEmoji: string,
+  statusText: string,
+  statusExpiration: number,
+  accessToken?: string,
+) => {
+  if (accessToken) {
+    try {
+      await updateStatusEmoji(
+        accessToken,
+        statusEmoji,
+        statusText,
+        statusExpiration,
+      )
+    } catch (error) {
+      console.error(error)
     }
   }
 }
