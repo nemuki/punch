@@ -1,4 +1,4 @@
-import { Button, Grid, Group, Loader, Stack, Text } from '@mantine/core'
+import { Button, Grid, Stack } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { readLocalStorageValue, useLocalStorage } from '@mantine/hooks'
 import { notifications } from '@mantine/notifications'
@@ -29,7 +29,7 @@ import {
 import { applicationConstants, isLocalStorageValid } from './utils'
 
 function App() {
-  const { authIsLoading, authErrorMessage, slackOauthToken } = useAuth()
+  const { authErrorMessage, slackOauthToken } = useAuth()
 
   // State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -275,15 +275,6 @@ function App() {
 
   if (authErrorMessage) {
     return <AuthError message={authErrorMessage} />
-  }
-
-  if (authIsLoading) {
-    return (
-      <Group>
-        <Loader />
-        <Text>Authenticating...</Text>
-      </Group>
-    )
   }
 
   return (

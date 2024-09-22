@@ -51,24 +51,6 @@ export const SlackEmojiSetting: FC<Props> = (props: Props) => {
   )
 }
 
-// <Text fw={700}>出社時</Text>
-//               <Group grow>
-//                 <TextInput
-//                   label="絵文字"
-//                   key={props.statusEmojiSettingsForm.key('emoji.office')}
-//                   {...props.statusEmojiSettingsForm.getInputProps(
-//                     'emoji.office',
-//                   )}
-//                 />
-//                 <TextInput
-//                   label="絵文字メッセージ"
-//                   key={props.statusEmojiSettingsForm.key('text.office')}
-//                   {...props.statusEmojiSettingsForm.getInputProps(
-//                     'text.office',
-//                   )}
-//                 />
-//               </Group>
-// を　コンポーネント化する
 type StatusEmojiInputProps = {
   label: string
   emojiKey: string

@@ -1,4 +1,4 @@
-import { Box, Card, Code, Stack, Text, Title } from '@mantine/core'
+import { Box, Card, Code, Skeleton, Stack, Text, Title } from '@mantine/core'
 import { MessageElement } from '@slack/web-api/dist/types/response/ConversationsHistoryResponse'
 import React, { FC } from 'react'
 
@@ -22,25 +22,16 @@ type ConversationsProps = {
 }
 
 export const SlackChannelAndConversation: FC<Props> = (props: Props) => {
-  if (props.isFetching) {
-    return (
+  return (
+    <Skeleton visible={props.isFetching}>
       <Stack>
         <Title order={2} size={'h5'}>
           Slackチャンネル / スレッド
         </Title>
-        <Text>取得中...</Text>
+        <Channel channelName={props.channelName} />
+        <Conversations conversations={props.conversations} />
       </Stack>
-    )
-  }
-
-  return (
-    <Stack>
-      <Title order={2} size={'h5'}>
-        Slackチャンネル / スレッド
-      </Title>
-      <Channel channelName={props.channelName} />
-      <Conversations conversations={props.conversations} />
-    </Stack>
+    </Skeleton>
   )
 }
 
