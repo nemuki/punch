@@ -67,13 +67,17 @@ export const AuthProvider: FC<AuthProviderProps> = (
       setAuthIsLoading(false)
       return
     }
+    ;(async () => {
+      if (oauthAuthorizationCode) {
+        await getAuthorizationToken()
+      } else {
+        const isAuth = await getRefreshToken()
 
-    if (oauthAuthorizationCode) {
-      getAuthorizationToken()
-    } else {
-      getRefreshToken()
-      getUserProfile()
-    }
+        if (isAuth) {
+          await getUserProfile()
+        }
+      }
+    })()
 
     setAuthIsLoading(false)
   }, [oauthAuthorizationCode])
@@ -183,11 +187,11 @@ export const AuthProvider: FC<AuthProviderProps> = (
   /**
    * リフレッシュトークンを取得する
    */
-  const getRefreshToken = async () => {
+  const getRefreshToken = async (): Promise<boolean | undefined> => {
     const { refreshToken, expiresAt } = localStorageSlackOauthToken
 
     if (!refreshToken) {
-      return
+      return false
     }
 
     const isTokenExpired = expiresAt && expiresAt < currentTimestamp
@@ -195,7 +199,7 @@ export const AuthProvider: FC<AuthProviderProps> = (
     console.info({ isTokenExpired, expiresAt, currentTimestamp })
 
     if (!isTokenExpired) {
-      return
+      return true
     }
 
     const errorMessage = 'リフレッシュトークン取得処理でエラーが発生しました'
@@ -205,7 +209,7 @@ export const AuthProvider: FC<AuthProviderProps> = (
 
       if (!response.ok) {
         handleSetError(errorMessage, response.error)
-        return
+        return false
       }
 
       setLocalStorageSlackOauthToken({
@@ -220,6 +224,8 @@ export const AuthProvider: FC<AuthProviderProps> = (
     } catch (error) {
       handleSetError(errorMessage, error)
     }
+
+    return undefined
   }
 
   /**
@@ -248,7 +254,7 @@ export const AuthProvider: FC<AuthProviderProps> = (
     }
   }
 
-  const value = {
+  const value: AuthContextProps = {
     authIsLoading,
     authErrorMessage,
     slackOauthToken: localStorageSlackOauthToken,
