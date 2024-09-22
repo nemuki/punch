@@ -1,7 +1,11 @@
 import { readLocalStorageValue, useLocalStorage } from '@mantine/hooks'
 import { UsersProfileGetResponse } from '@slack/web-api'
 import React, { FC, useEffect, useState } from 'react'
-import { fetchToken, fetchUserProfile, revokeToken } from '../slackApi.ts'
+import {
+  fetchToken,
+  fetchUserProfile,
+  revokeToken,
+} from '../infra/api/slack.ts'
 
 type SlackOauthToken = {
   accessToken?: string
@@ -43,7 +47,7 @@ export const AuthProvider: FC<AuthProviderProps> = (
     removeLocalStorageSlackOauthToken,
   ] = useLocalStorage<SlackOauthToken>({
     key: 'slackOAuthToken',
-    defaultValue: readLocalStorageValue({
+    defaultValue: readLocalStorageValue<SlackOauthToken>({
       key: 'slackOAuthToken',
       defaultValue: {},
     }),
@@ -67,13 +71,17 @@ export const AuthProvider: FC<AuthProviderProps> = (
       setAuthIsLoading(false)
       return
     }
+    ;(async () => {
+      if (oauthAuthorizationCode) {
+        await getAuthorizationToken()
+      } else {
+        const isAuth = await getRefreshToken()
 
-    if (oauthAuthorizationCode) {
-      getAuthorizationToken()
-    } else {
-      getRefreshToken()
-      getUserProfile()
-    }
+        if (isAuth) {
+          await getUserProfile()
+        }
+      }
+    })()
 
     setAuthIsLoading(false)
   }, [oauthAuthorizationCode])
@@ -107,9 +115,9 @@ export const AuthProvider: FC<AuthProviderProps> = (
     const errorMessage = 'トークン削除処理でエラーが発生しました'
 
     try {
-      const response = await revokeToken(
-        localStorageSlackOauthToken.accessToken,
-      )
+      const response = await revokeToken({
+        accessToken: localStorageSlackOauthToken.accessToken,
+      })
 
       if (!response.ok) {
         handleSetError(errorMessage, response.error)
@@ -134,10 +142,10 @@ export const AuthProvider: FC<AuthProviderProps> = (
     const errorMessage = '認可コード取得処理でエラーが発生しました'
 
     try {
-      const response = await fetchToken(
-        'authorization_code',
-        oauthAuthorizationCode,
-      )
+      const response = await fetchToken({
+        grantType: 'authorization_code',
+        token: oauthAuthorizationCode,
+      })
 
       if (!response.ok) {
         setAuthErrorMessage(`${errorMessage} ${response.error}`)
@@ -183,11 +191,11 @@ export const AuthProvider: FC<AuthProviderProps> = (
   /**
    * リフレッシュトークンを取得する
    */
-  const getRefreshToken = async () => {
+  const getRefreshToken = async (): Promise<boolean | undefined> => {
     const { refreshToken, expiresAt } = localStorageSlackOauthToken
 
     if (!refreshToken) {
-      return
+      return false
     }
 
     const isTokenExpired = expiresAt && expiresAt < currentTimestamp
@@ -195,17 +203,20 @@ export const AuthProvider: FC<AuthProviderProps> = (
     console.info({ isTokenExpired, expiresAt, currentTimestamp })
 
     if (!isTokenExpired) {
-      return
+      return true
     }
 
     const errorMessage = 'リフレッシュトークン取得処理でエラーが発生しました'
 
     try {
-      const response = await fetchToken('refresh_token', refreshToken)
+      const response = await fetchToken({
+        grantType: 'refresh_token',
+        token: refreshToken,
+      })
 
       if (!response.ok) {
         handleSetError(errorMessage, response.error)
-        return
+        return false
       }
 
       setLocalStorageSlackOauthToken({
@@ -220,6 +231,8 @@ export const AuthProvider: FC<AuthProviderProps> = (
     } catch (error) {
       handleSetError(errorMessage, error)
     }
+
+    return undefined
   }
 
   /**
@@ -233,9 +246,9 @@ export const AuthProvider: FC<AuthProviderProps> = (
     const errorMessage = 'ユーザ情報取得処理でエラーが発生しました'
 
     try {
-      const response = await fetchUserProfile(
-        localStorageSlackOauthToken.accessToken,
-      )
+      const response = await fetchUserProfile({
+        accessToken: localStorageSlackOauthToken.accessToken,
+      })
 
       if (!response.ok) {
         handleSetError(errorMessage, response.error)
@@ -248,7 +261,7 @@ export const AuthProvider: FC<AuthProviderProps> = (
     }
   }
 
-  const value = {
+  const value: AuthContextProps = {
     authIsLoading,
     authErrorMessage,
     slackOauthToken: localStorageSlackOauthToken,

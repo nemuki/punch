@@ -1,119 +1,78 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Card,
-  Checkbox,
-  Code,
-  Container,
-  Grid,
-  Group,
-  Loader,
-  Stack,
-  Text,
-  TextInput,
-  Textarea,
-  Title,
-} from '@mantine/core'
+import { Button, Grid, Stack } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { readLocalStorageValue, useLocalStorage } from '@mantine/hooks'
-import { notifications } from '@mantine/notifications'
+import {
+  readLocalStorageValue,
+  useDisclosure,
+  useLocalStorage,
+} from '@mantine/hooks'
 import {
   ConversationsHistoryResponse,
   ConversationsInfoResponse,
 } from '@slack/web-api'
-import { MessageElement } from '@slack/web-api/dist/types/response/ConversationsHistoryResponse'
 import { useEffect, useMemo, useState } from 'react'
-import { applicationConstants } from './constant.ts'
+import {
+  AuthError,
+  LocalStorageError,
+  PunchInForm,
+  SlackChannelAndConversation,
+  SlackSettings,
+} from './components'
 import { useAuth } from './hooks/useAuth.tsx'
 import {
-  chatPostMessage,
-  fetchConversationsHistory,
-  fetchConversationsInfo,
-} from './slackApi.ts'
-
-type Conversations = {
-  channelId: string
-  searchMessage: string
-}
-
-type WorkStatus = {
-  office?: string
-  telework?: string
-  leave?: string
-}
-
-type PunchInSettings = {
-  changeStatusEmoji: boolean
-  attendance: boolean
-  additionalMessage: string
-  punchIn?: 'start' | 'end'
-}
-
-type AppSettings = {
-  conversations: Conversations
-  status?: {
-    emoji: WorkStatus
-    text: WorkStatus
-  }
-}
+  getConversations,
+  postMessage,
+  updateEmoji,
+} from './infra/repository/slack.ts'
+import {
+  AppSettings,
+  Conversation,
+  PunchInSettings,
+  StatusEmojiSetting,
+} from './types'
+import { applicationConstants, isLocalStorageValid } from './utils'
 
 function App() {
-  const {
-    authIsLoading,
-    authErrorMessage,
-    slackOauthToken,
-    userProfile,
-    handleLogout,
-    handleRemoveLocalStorageSlackOauthToken,
-  } = useAuth()
+  const { authErrorMessage, slackOauthToken } = useAuth()
 
-  const [localStorageAppSettings, setLocalStorageAppSettings] =
-    useLocalStorage<AppSettings>({
-      key: 'appSettings',
-      defaultValue: readLocalStorageValue({
-        key: 'appSettings',
-        defaultValue: {
-          conversations: {
-            channelId: '',
-            searchMessage: '',
-          },
-          status: {
-            emoji: {
-              attendance: ':office:',
-              telework: ':house_with_garden:',
-              leave: ':soon:',
-            },
-            text: {
-              attendance: '出社しています',
-              telework: 'テレワーク',
-              leave: '退勤しています',
-            },
-          },
-        },
-      }),
-    })
-
+  // State
+  const [
+    isSettingsOpen,
+    { toggle: toggleSettingsOpen, open: setIsSettingsOpen },
+  ] = useDisclosure(false)
+  const [hasLocalStorageError, setHasLocalStorageError] = useState(false)
+  const [isConversationsFetching, setIsConversationsFetching] = useState(true)
   const [conversationsHistory, setConversationsHistory] = useState<
     ConversationsHistoryResponse | undefined
   >(undefined)
   const [conversationsInfo, setConversationsInfo] = useState<
     ConversationsInfoResponse | undefined
   >(undefined)
+  const [
+    localStorageAppSettings,
+    setLocalStorageAppSettings,
+    removeLocalStorageAppSettings,
+  ] = useLocalStorage<AppSettings>({
+    key: 'appSettings',
+    defaultValue: readLocalStorageValue<AppSettings>({
+      key: 'appSettings',
+      defaultValue: applicationConstants.defaultAppSettings,
+    }),
+  })
 
-  const form = useForm<Conversations>({
+  // form
+  const conversationSettingForm = useForm<Conversation>({
     mode: 'uncontrolled',
     initialValues: localStorageAppSettings.conversations,
   })
-  const form2 = useForm<AppSettings>({
+  const statusEmojiSettingForm = useForm<StatusEmojiSetting>({
     mode: 'uncontrolled',
-    initialValues: localStorageAppSettings,
+    initialValues: localStorageAppSettings.status,
   })
-  const form3 = useForm<PunchInSettings>({
+  const punchInForm = useForm<PunchInSettings>({
     mode: 'controlled',
     initialValues: {
       changeStatusEmoji: false,
-      attendance: false,
+      inOffice: false,
       additionalMessage: '',
       punchIn: undefined,
     },
@@ -123,107 +82,35 @@ function App() {
     return conversationsHistory?.messages
       ?.filter((message) => message.type === 'message')
       .filter((message) =>
-        message?.text?.includes(form.getValues().searchMessage),
+        message?.text?.includes(
+          conversationSettingForm.getValues().searchMessage,
+        ),
       )[0]
   }, [conversationsHistory])
-
-  const getConversationsHistory = async (channelId: string) => {
-    if (slackOauthToken.accessToken) {
-      try {
-        const response = await fetchConversationsHistory(
-          slackOauthToken.accessToken,
-          channelId,
-        )
-
-        if (!response.ok) {
-          console.error(response.error)
-        }
-
-        setConversationsHistory(response)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-  }
-
-  const getConversationsInfo = async (channelId: string) => {
-    if (slackOauthToken.accessToken) {
-      try {
-        const response = await fetchConversationsInfo(
-          slackOauthToken.accessToken,
-          channelId,
-        )
-
-        if (!response.ok) {
-          console.error(response.error)
-        }
-
-        setConversationsInfo(response)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-  }
-
-  const getConversations = (values: typeof form.values) => {
-    getConversationsInfo(values.channelId)
-
-    if (values.searchMessage) {
-      getConversationsHistory(values.channelId)
-    }
-  }
-
-  const postMessage = async (channelId: string, message: string) => {
-    if (slackOauthToken.accessToken) {
-      try {
-        const response = await chatPostMessage(
-          slackOauthToken.accessToken,
-          channelId,
-          message,
-          filteredConversations?.ts,
-        )
-
-        if (response.ok) {
-          console.info(response)
-          notifications.show({
-            title: 'メッセージ送信完了',
-            message: message,
-            color: 'teal',
-          })
-        } else {
-          console.error(response)
-          notifications.show({
-            title: 'メッセージ送信エラー',
-            message: 'Slack メッセージ送信時にエラーが発生しました',
-            color: 'red',
-          })
-        }
-      } catch (error) {
-        console.error(error)
-        notifications.show({
-          title: 'メッセージ送信エラー',
-          message: 'Slack メッセージ送信時にエラーが発生しました',
-          color: 'red',
-        })
-      }
-    }
-  }
 
   const getWorkStatus = (attendance: boolean): string =>
     attendance ? '業務' : 'テレワーク'
 
   const createPunchInStartMessage = (values: PunchInSettings) => {
-    const baseMessage = getWorkStatus(values.attendance)
+    const baseMessage = getWorkStatus(values.inOffice)
     return `${baseMessage}開始します\n${values.additionalMessage}`
   }
 
   const createPunchInEndMessage = (values: PunchInSettings) => {
-    const baseMessage = getWorkStatus(values.attendance)
+    const baseMessage = getWorkStatus(values.inOffice)
     return `${baseMessage}終了します\n${values.additionalMessage}`
   }
 
-  const handleSubmit = (values: typeof form.values) => {
-    getConversations(values)
+  const handleSubmitConversationSettingForm = (
+    values: typeof conversationSettingForm.values,
+  ) => {
+    getConversations({
+      channelId: values.channelId,
+      setConversationsHistory,
+      setConversationsInfo,
+      accessToken: slackOauthToken.accessToken,
+      searchMessage: values.searchMessage,
+    })
 
     setLocalStorageAppSettings((prev) => ({
       ...prev,
@@ -231,280 +118,163 @@ function App() {
     }))
   }
 
-  const handleSubmit2 = (values: typeof form2.values) => {
+  const handleSubmitStatusEmojiSettingsForm = (
+    values: typeof statusEmojiSettingForm.values,
+  ) => {
     setLocalStorageAppSettings((prev) => ({
       ...prev,
-      message: values,
+      status: values,
     }))
   }
 
   /**
    * 出勤時の関数
-   *
-   * ステータス絵文字を変更する場合は、絵文字を変更する
-   * メッセージを追加する場合は、メッセージを追加する
-   * chatPostMessageを呼び出す
    */
-  const handlePunchIn = (values: typeof form3.values) => {
+  const handleSubmitPunchInForm = (values: typeof punchInForm.values) => {
     if (values.punchIn === undefined) {
       return
     }
 
     const channelId = localStorageAppSettings.conversations.channelId
 
+    const nineHoursLater = new Date()
+    nineHoursLater.setHours(nineHoursLater.getHours() + 9)
+    const nineHoursLaterUnixTime = Math.floor(nineHoursLater.getTime() / 1000)
+
+    const midnight = new Date()
+    midnight.setDate(midnight.getDate() + 1)
+    midnight.setHours(0, 0, 0, 0)
+    const midnightUnixTime = Math.floor(midnight.getTime() / 1000)
+
     if (values.punchIn === 'start') {
       // 出社時の処理
       if (values.changeStatusEmoji) {
         // ステータス絵文字を変更する
+        if (values.inOffice) {
+          updateEmoji({
+            statusEmoji: localStorageAppSettings.status.emoji.office,
+            statusText: localStorageAppSettings.status.text.office,
+            statusExpiration: nineHoursLaterUnixTime,
+            accessToken: slackOauthToken.accessToken,
+          })
+        } else {
+          updateEmoji({
+            statusEmoji: localStorageAppSettings.status.emoji.telework,
+            statusText: localStorageAppSettings.status.text.telework,
+            statusExpiration: nineHoursLaterUnixTime,
+            accessToken: slackOauthToken.accessToken,
+          })
+        }
       }
 
-      // postMessageを呼び出す
-      postMessage(channelId, createPunchInStartMessage(values))
+      postMessage({
+        channelId,
+        message: createPunchInStartMessage(values),
+        threadTs: filteredConversations?.ts,
+        accessToken: slackOauthToken.accessToken,
+      })
     } else if (values.punchIn === 'end') {
       // 退勤時の処理
       if (values.changeStatusEmoji) {
         // ステータス絵文字を変更する
+        updateEmoji({
+          statusEmoji: localStorageAppSettings.status.emoji.leave,
+          statusText: localStorageAppSettings.status.text.leave,
+          statusExpiration: midnightUnixTime,
+          accessToken: slackOauthToken.accessToken,
+        })
       }
 
-      // postMessageを呼び出す
-      postMessage(channelId, createPunchInEndMessage(values))
+      postMessage({
+        channelId,
+        message: createPunchInEndMessage(values),
+        threadTs: filteredConversations?.ts,
+        accessToken: slackOauthToken.accessToken,
+      })
     }
   }
 
+  /**
+   * 初回アクセス時の処理
+   */
   useEffect(() => {
-    if (form.values.channelId) {
-      getConversations(form.values)
-    }
+    ;(async () => {
+      if (conversationSettingForm.values.channelId) {
+        await getConversations({
+          channelId: conversationSettingForm.values.channelId,
+          setConversationsHistory,
+          setConversationsInfo,
+          accessToken: slackOauthToken.accessToken,
+          searchMessage: conversationSettingForm.values.searchMessage,
+        })
+      } else {
+        setIsSettingsOpen()
+      }
+
+      setIsConversationsFetching(false)
+
+      if (!isLocalStorageValid(localStorageAppSettings)) {
+        setHasLocalStorageError(true)
+      }
+    })()
   }, [])
 
+  // Render
   if (Object.keys(slackOauthToken).length === 0) {
     return (
-      <Container>
-        <Button
-          component={'a'}
-          href={applicationConstants.slackOauthAuthorizeUrl}
-        >
-          Login with Slack
-        </Button>
-        <Code block>Not logged in</Code>
-      </Container>
+      <Button
+        component={'a'}
+        href={applicationConstants.slackOauthAuthorizeUrl}
+      >
+        Login with Slack
+      </Button>
+    )
+  }
+
+  if (hasLocalStorageError) {
+    return (
+      <LocalStorageError
+        localStorageAppSettings={localStorageAppSettings}
+        removeLocalStorageAppSettings={removeLocalStorageAppSettings}
+      />
     )
   }
 
   if (authErrorMessage) {
-    return (
-      <Container>
-        <Button
-          onClick={() => {
-            handleRemoveLocalStorageSlackOauthToken()
-          }}
-        >
-          ログイン情報を削除
-        </Button>
-        <Text c={'red'} fw={500}>
-          {authErrorMessage}
-        </Text>
-      </Container>
-    )
-  }
-
-  if (authIsLoading || !userProfile) {
-    return (
-      <Container>
-        <Group>
-          <Loader />
-          <Text>Authenticating...</Text>
-        </Group>
-      </Container>
-    )
+    return <AuthError message={authErrorMessage} />
   }
 
   return (
-    <Container>
-      <Grid>
-        <Grid.Col span={6}>
-          <Stack>
-            <Stack>
-              <Group>
-                <Avatar src={userProfile.profile?.image_192} />
-                <Text>{userProfile.profile?.real_name} でログイン中</Text>
-              </Group>
-              <Button
-                onClick={() => {
-                  handleLogout()
-                }}
-                w={'fit-content'}
-              >
-                ログアウト
-              </Button>
-            </Stack>
-            <form onSubmit={form.onSubmit(handleSubmit)}>
-              <Stack>
-                <TextInput
-                  label="チャンネルID"
-                  description="投稿するチャンネルのIDを入力してください"
-                  key={form.key('channelId')}
-                  {...form.getInputProps('channelId')}
-                />
-                <TextInput
-                  label="スレッド検索"
-                  description="検索文言を含む 当日午前6時以降 のメッセージを部分一致で検索します
-指定しない場合はチャンネルに投稿します
-例: 勤怠スレッド"
-                  placeholder="勤怠スレッド"
-                  styles={{ description: { whiteSpace: 'pre-wrap' } }}
-                  key={form.key('searchMessage')}
-                  {...form.getInputProps('searchMessage')}
-                />
-                <Button type={'submit'} w={'fit-content'}>
-                  検索
-                </Button>
-              </Stack>
-            </form>
-            <Box>
-              <Text size={'sm'}>投稿するチャンネル名</Text>
-              <Text span fw={700}>
-                {conversationsInfo?.channel?.name}
-              </Text>
-            </Box>
-            <Box>
-              <Text size={'sm'}>返信するスレッド</Text>
-              <Conversations conversations={filteredConversations} />
-            </Box>
-            <Box>
-              <form onSubmit={form2.onSubmit(handleSubmit2)}>
-                <Stack>
-                  <Title order={2} size={'sm'}>
-                    Slack絵文字設定
-                  </Title>
-                  <Group grow>
-                    <TextInput
-                      label="出社時の絵文字"
-                      key={form2.key('status.emoji.attendance')}
-                      {...form2.getInputProps('status.emoji.attendance')}
-                    />
-                    <TextInput
-                      label="出社時の絵文字メッセージ"
-                      key={form2.key('status.text.attendance')}
-                      {...form2.getInputProps('status.text.attendance')}
-                    />
-                  </Group>
-                  <Group grow>
-                    <TextInput
-                      label="テレワーク時の絵文字"
-                      key={form2.key('status.emoji.telework')}
-                      {...form2.getInputProps('status.emoji.telework')}
-                    />
-                    <TextInput
-                      label="テレワーク時の絵文字メッセージ"
-                      key={form2.key('status.text.telework')}
-                      {...form2.getInputProps('status.text.telework')}
-                    />
-                  </Group>
-                  <Group grow>
-                    <TextInput
-                      label="退勤時の絵文字"
-                      key={form2.key('status.emoji.leave')}
-                      {...form2.getInputProps('status.emoji.leave')}
-                    />
-                    <TextInput
-                      label="退勤時の絵文字メッセージ"
-                      key={form2.key('status.text.leave')}
-                      {...form2.getInputProps('status.text.leave')}
-                    />
-                  </Group>
-                  <Button type={'submit'} w={'fit-content'}>
-                    保存
-                  </Button>
-                </Stack>
-              </form>
-            </Box>
-          </Stack>
-        </Grid.Col>
-        <Grid.Col span={6}>
-          <form onSubmit={form3.onSubmit(handlePunchIn)}>
-            <Stack>
-              <Checkbox
-                description={''}
-                label={'ステータス絵文字を変更する'}
-                key={form3.key('changeStatusEmoji')}
-                {...form3.getInputProps('changeStatusEmoji')}
-              ></Checkbox>
-              <Checkbox
-                description={'デフォルトはテレワーク'}
-                label={'出社時はチェック'}
-                key={form3.key('attendance')}
-                {...form3.getInputProps('attendance')}
-              ></Checkbox>
-              <Textarea
-                label="追加メッセージ"
-                description={'追加のメッセージを入力できます'}
-                key={form3.key('additionalMessage')}
-                {...form3.getInputProps('additionalMessage')}
-              />
-              <Group grow>
-                <Button
-                  type={'submit'}
-                  onClick={() =>
-                    form3.setValues((prev) => ({
-                      ...prev,
-                      punchIn: 'start',
-                    }))
-                  }
-                >
-                  出勤
-                </Button>
-                <Button
-                  color={'pink'}
-                  type={'submit'}
-                  onClick={() => {
-                    form3.setValues((prev) => ({
-                      ...prev,
-                      punchIn: 'end',
-                    }))
-                  }}
-                >
-                  退勤
-                </Button>
-              </Group>
-              <Title order={2} size={'sm'}>
-                送信メッセージプレビュー
-              </Title>
-              <Card withBorder>
-                <Text>
-                  {getWorkStatus(form3.values.attendance)}
-                  開始 / 終了します
-                </Text>
-                <Text inherit style={{ whiteSpace: 'pre-wrap' }}>
-                  {form3.values.additionalMessage}
-                </Text>
-              </Card>
-            </Stack>
-          </form>
-        </Grid.Col>
-      </Grid>
-    </Container>
-  )
-}
-
-const Conversations = (props: { conversations?: MessageElement }) => {
-  if (props.conversations === undefined) {
-    return (
-      <Box>
-        <Text>スレッドが見つかりませんでした。</Text>
-        <Text>チャンネルに投稿します。</Text>
-      </Box>
-    )
-  }
-
-  return (
-    <>
-      <Code block>{props.conversations.text}</Code>
-      <details>
-        <summary>メッセージを表示</summary>
-        <Code block>{JSON.stringify(props.conversations, undefined, 2)}</Code>
-      </details>
-    </>
+    <Grid>
+      <Grid.Col span={6}>
+        <Stack>
+          <SlackChannelAndConversation
+            conversationsInfo={conversationsInfo}
+            conversations={filteredConversations}
+            isFetching={isConversationsFetching}
+          />
+          <SlackSettings
+            isOpen={isSettingsOpen}
+            toggleSettingsOpen={toggleSettingsOpen}
+            conversationSettingForm={conversationSettingForm}
+            handleSubmitConversationSettingForm={
+              handleSubmitConversationSettingForm
+            }
+            statusEmojiSettingForm={statusEmojiSettingForm}
+            handleSubmitStatusEmojiSettingForm={
+              handleSubmitStatusEmojiSettingsForm
+            }
+          />
+        </Stack>
+      </Grid.Col>
+      <Grid.Col span={6}>
+        <PunchInForm
+          punchInForm={punchInForm}
+          handleSubmitPunchInForm={handleSubmitPunchInForm}
+          getWorkStatus={getWorkStatus}
+        />
+      </Grid.Col>
+    </Grid>
   )
 }
 

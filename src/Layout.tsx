@@ -1,5 +1,6 @@
-import { AppShell, Group, Title } from '@mantine/core'
+import { AppShell, Container, Group, Title } from '@mantine/core'
 import React, { FC } from 'react'
+import { User } from './components'
 
 type Props = {
   children: React.ReactNode
@@ -11,11 +12,14 @@ export const Layout: FC<Props> = (props: Props) => {
       <AppShell.Header>
         <Group justify="center" h="100%" px="md">
           <Title order={1} size="h3">
-            Slack Emoji Message
+            Punch 👊
           </Title>
+          <User />
         </Group>
       </AppShell.Header>
-      <AppShell.Main>{props.children}</AppShell.Main>
+      <AppShell.Main>
+        <Container>{props.children}</Container>
+      </AppShell.Main>
     </AppShell>
   )
 }
