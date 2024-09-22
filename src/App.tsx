@@ -13,7 +13,7 @@ import {
   PunchInForm,
   SlackChannelAndConversation,
   SlackConversationSetting,
-  SlackEmojiSettings,
+  SlackEmojiSetting,
 } from './components'
 import { useAuth } from './hooks/useAuth.tsx'
 import {
@@ -291,7 +291,7 @@ function App() {
               conversationSettingForm={conversationSettingForm}
               handleSubmit={handleSubmitconversationSettingForm}
             />
-            <SlackEmojiSettings
+            <SlackEmojiSetting
               statusEmojiSettingsForm={statusEmojiSettingsForm}
               handleSubmit={handleSubmitStatusEmojiSettingsForm}
             />
