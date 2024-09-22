@@ -322,6 +322,9 @@ function App() {
           <Stack>
             <form onSubmit={form.onSubmit(handleSubmit)}>
               <Stack>
+                <Title order={2} size={'sm'}>
+                  Slackチャンネル / スレッド検索
+                </Title>
                 <TextInput
                   label="チャンネルID"
                   description="投稿するチャンネルのIDを入力してください"
