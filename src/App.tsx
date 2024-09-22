@@ -1,15 +1,12 @@
 import {
   Box,
   Button,
-  Card,
-  Checkbox,
   Grid,
   Group,
   Loader,
   Stack,
   Text,
   TextInput,
-  Textarea,
   Title,
 } from '@mantine/core'
 import { useForm } from '@mantine/form'
@@ -20,7 +17,11 @@ import {
   ConversationsInfoResponse,
 } from '@slack/web-api'
 import { useEffect, useMemo, useState } from 'react'
-import { AuthError, SlackChannelAndConversation } from './components'
+import {
+  AuthError,
+  PunchInForm,
+  SlackChannelAndConversation,
+} from './components'
 import { useAuth } from './hooks/useAuth.tsx'
 import {
   chatPostMessage,
@@ -58,7 +59,7 @@ function App() {
     mode: 'uncontrolled',
     initialValues: localStorageAppSettings,
   })
-  const form3 = useForm<PunchInSettings>({
+  const punchInForm = useForm<PunchInSettings>({
     mode: 'controlled',
     initialValues: {
       changeStatusEmoji: false,
@@ -194,7 +195,7 @@ function App() {
    * メッセージを追加する場合は、メッセージを追加する
    * chatPostMessageを呼び出す
    */
-  const handlePunchIn = (values: typeof form3.values) => {
+  const handlePunchIn = (values: typeof punchInForm.values) => {
     if (values.punchIn === undefined) {
       return
     }
@@ -346,65 +347,11 @@ function App() {
           </Stack>
         </Grid.Col>
         <Grid.Col span={6}>
-          <form onSubmit={form3.onSubmit(handlePunchIn)}>
-            <Stack>
-              <Checkbox
-                description={''}
-                label={'ステータス絵文字を変更する'}
-                key={form3.key('changeStatusEmoji')}
-                {...form3.getInputProps('changeStatusEmoji')}
-              ></Checkbox>
-              <Checkbox
-                description={'デフォルトはテレワーク'}
-                label={'出社時はチェック'}
-                key={form3.key('attendance')}
-                {...form3.getInputProps('attendance')}
-              ></Checkbox>
-              <Textarea
-                label="追加メッセージ"
-                description={'追加のメッセージを入力できます'}
-                key={form3.key('additionalMessage')}
-                {...form3.getInputProps('additionalMessage')}
-              />
-              <Group grow>
-                <Button
-                  type={'submit'}
-                  onClick={() =>
-                    form3.setValues((prev) => ({
-                      ...prev,
-                      punchIn: 'start',
-                    }))
-                  }
-                >
-                  出勤
-                </Button>
-                <Button
-                  color={'pink'}
-                  type={'submit'}
-                  onClick={() => {
-                    form3.setValues((prev) => ({
-                      ...prev,
-                      punchIn: 'end',
-                    }))
-                  }}
-                >
-                  退勤
-                </Button>
-              </Group>
-              <Title order={2} size={'sm'}>
-                送信メッセージプレビュー
-              </Title>
-              <Card withBorder>
-                <Text>
-                  {getWorkStatus(form3.values.attendance)}
-                  開始 / 終了します
-                </Text>
-                <Text inherit style={{ whiteSpace: 'pre-wrap' }}>
-                  {form3.values.additionalMessage}
-                </Text>
-              </Card>
-            </Stack>
-          </form>
+          <PunchInForm
+            punchInForm={punchInForm}
+            handlePunchIn={handlePunchIn}
+            getWorkStatus={getWorkStatus}
+          />
         </Grid.Col>
       </Grid>
     </>
