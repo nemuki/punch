@@ -235,6 +235,9 @@ function App() {
     }
   }
 
+  /**
+   * 初回アクセス時の処理
+   */
   useEffect(() => {
     if (form.values.channelId) {
       getConversations(form.values)
@@ -245,6 +248,7 @@ function App() {
     }
   }, [])
 
+  // Render
   if (hasLocalStorageError) {
     return (
       <LocalStorageError
