@@ -5,6 +5,7 @@ import React, { FC } from 'react'
 type Props = {
   channelName?: string
   conversations?: MessageElement
+  isFetching: boolean
 }
 
 type CardTemplateProps = {
@@ -21,6 +22,17 @@ type ConversationsProps = {
 }
 
 export const SlackChannelAndConversation: FC<Props> = (props: Props) => {
+  if (props.isFetching) {
+    return (
+      <Stack>
+        <Title order={2} size={'h5'}>
+          Slackチャンネル / スレッド
+        </Title>
+        <Text>取得中...</Text>
+      </Stack>
+    )
+  }
+
   return (
     <Stack>
       <Title order={2} size={'h5'}>

@@ -34,6 +34,7 @@ function App() {
   // State
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [hasLocalStorageError, setHasLocalStorageError] = useState(false)
+  const [isConversationsFetching, setIsConversationsFetching] = useState(true)
   const [conversationsHistory, setConversationsHistory] = useState<
     ConversationsHistoryResponse | undefined
   >(undefined)
@@ -119,12 +120,16 @@ function App() {
     }
   }
 
-  const getConversations = (values: typeof conversationSettingForm.values) => {
-    getConversationsInfo(values.channelId)
+  const getConversations = async (
+    values: typeof conversationSettingForm.values,
+  ) => {
+    await getConversationsInfo(values.channelId)
 
     if (values.searchMessage) {
-      getConversationsHistory(values.channelId)
+      await getConversationsHistory(values.channelId)
     }
+
+    setIsConversationsFetching(false)
   }
 
   const postMessage = async (channelId: string, message: string) => {
@@ -237,6 +242,7 @@ function App() {
       getConversations(conversationSettingForm.values)
     } else {
       setIsSettingsOpen(true)
+      setIsConversationsFetching(false)
     }
 
     if (!isLocalStorageValid(localStorageAppSettings)) {
@@ -288,6 +294,7 @@ function App() {
             <SlackChannelAndConversation
               channelName={conversationsInfo?.channel?.name}
               conversations={filteredConversations}
+              isFetching={isConversationsFetching}
             />
             <SlackSettings
               isOpen={isSettingsOpen}
