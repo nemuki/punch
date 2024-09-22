@@ -32,6 +32,7 @@ function App() {
   const { authIsLoading, authErrorMessage, slackOauthToken } = useAuth()
 
   // State
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [hasLocalStorageError, setHasLocalStorageError] = useState(false)
   const [conversationsHistory, setConversationsHistory] = useState<
     ConversationsHistoryResponse | undefined
@@ -234,6 +235,8 @@ function App() {
   useEffect(() => {
     if (conversationSettingForm.values.channelId) {
       getConversations(conversationSettingForm.values)
+    } else {
+      setIsSettingsOpen(true)
     }
 
     if (!isLocalStorageValid(localStorageAppSettings)) {
@@ -287,7 +290,7 @@ function App() {
               conversations={filteredConversations}
             />
             <SlackSettings
-              isOpen={true}
+              isOpen={isSettingsOpen}
               conversationSettingForm={conversationSettingForm}
               handleSubmitConversationSettingForm={
                 handleSubmitconversationSettingForm
