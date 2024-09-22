@@ -176,7 +176,7 @@ function App() {
     return `${baseMessage}終了します\n${values.additionalMessage}`
   }
 
-  const handleSubmitconversationSettingForm = (
+  const handleSubmitConversationSettingForm = (
     values: typeof conversationSettingForm.values,
   ) => {
     getConversations(values)
@@ -293,7 +293,7 @@ function App() {
               isOpen={isSettingsOpen}
               conversationSettingForm={conversationSettingForm}
               handleSubmitConversationSettingForm={
-                handleSubmitconversationSettingForm
+                handleSubmitConversationSettingForm
               }
               statusEmojiSettingsForm={statusEmojiSettingsForm}
               handleSubmitStatusEmojiSettingsForm={
