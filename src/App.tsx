@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Card,
   Grid,
   Group,
   Loader,
@@ -23,6 +24,7 @@ import {
   SlackChannelAndConversation,
   SlackEmojiSettings,
 } from './components'
+import { LocalStorageError } from './components/LocalStorageError.tsx'
 import { useAuth } from './hooks/useAuth.tsx'
 import {
   chatPostMessage,
@@ -245,13 +247,10 @@ function App() {
 
   if (hasLocalStorageError) {
     return (
-      <Stack>
-        <Group>
-          <Text>Local Storage に保存された設定情報が不正です</Text>
-          <Text>設定情報を初期化します</Text>
-        </Group>
-        <Button onClick={() => removeLocalStorageAppSettings()}>初期化</Button>
-      </Stack>
+      <LocalStorageError
+        localStorageAppSettings={localStorageAppSettings}
+        removeLocalStorageAppSettings={removeLocalStorageAppSettings}
+      />
     )
   }
 
