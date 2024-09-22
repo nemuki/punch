@@ -22,13 +22,13 @@ import {
 } from '@slack/web-api'
 import { useEffect, useMemo, useState } from 'react'
 import { Conversations } from './components/Conversations.tsx'
-import { applicationConstants } from './constant.ts'
 import { useAuth } from './hooks/useAuth.tsx'
 import {
   chatPostMessage,
   fetchConversationsHistory,
   fetchConversationsInfo,
 } from './slackApi.ts'
+import { applicationConstants } from './utils/constant.ts'
 
 type Conversations = {
   channelId: string

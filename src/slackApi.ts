@@ -5,7 +5,7 @@ import {
   OauthV2AccessResponse,
   UsersProfileGetResponse,
 } from '@slack/web-api'
-import { env } from './env.ts'
+import { env } from './utils/env.ts'
 
 const slackApiBaseUrl = 'https://slack.com/api'
 
