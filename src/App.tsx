@@ -21,8 +21,8 @@ import {
   ConversationsHistoryResponse,
   ConversationsInfoResponse,
 } from '@slack/web-api'
-import { MessageElement } from '@slack/web-api/dist/types/response/ConversationsHistoryResponse'
 import { useEffect, useMemo, useState } from 'react'
+import { Conversations } from './components/Conversations.tsx'
 import { applicationConstants } from './constant.ts'
 import { useAuth } from './hooks/useAuth.tsx'
 import {
@@ -482,27 +482,6 @@ function App() {
           </form>
         </Grid.Col>
       </Grid>
-    </>
-  )
-}
-
-const Conversations = (props: { conversations?: MessageElement }) => {
-  if (props.conversations === undefined) {
-    return (
-      <Box>
-        <Text>スレッドが見つかりませんでした。</Text>
-        <Text>チャンネルに投稿します。</Text>
-      </Box>
-    )
-  }
-
-  return (
-    <>
-      <Code block>{props.conversations.text}</Code>
-      <details>
-        <summary>メッセージを表示</summary>
-        <Code block>{JSON.stringify(props.conversations, undefined, 2)}</Code>
-      </details>
     </>
   )
 }
