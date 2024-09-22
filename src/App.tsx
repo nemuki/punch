@@ -21,40 +21,15 @@ import {
   ConversationsInfoResponse,
 } from '@slack/web-api'
 import { useEffect, useMemo, useState } from 'react'
-import { Conversations } from './components/Conversations.tsx'
+import { SlackChannelAndConversation } from './components/SlackChannelAndConversation.tsx'
 import { useAuth } from './hooks/useAuth.tsx'
 import {
   chatPostMessage,
   fetchConversationsHistory,
   fetchConversationsInfo,
 } from './infra/slackApi.ts'
+import { AppSettings, Conversations, PunchInSettings } from './types'
 import { applicationConstants } from './utils/constant.ts'
-
-type Conversations = {
-  channelId: string
-  searchMessage: string
-}
-
-type WorkStatus = {
-  office?: string
-  telework?: string
-  leave?: string
-}
-
-type PunchInSettings = {
-  changeStatusEmoji: boolean
-  attendance: boolean
-  additionalMessage: string
-  punchIn?: 'start' | 'end'
-}
-
-type AppSettings = {
-  conversations: Conversations
-  status?: {
-    emoji: WorkStatus
-    text: WorkStatus
-  }
-}
 
 function App() {
   const {
@@ -67,26 +42,9 @@ function App() {
   const [localStorageAppSettings, setLocalStorageAppSettings] =
     useLocalStorage<AppSettings>({
       key: 'appSettings',
-      defaultValue: readLocalStorageValue({
+      defaultValue: readLocalStorageValue<AppSettings>({
         key: 'appSettings',
-        defaultValue: {
-          conversations: {
-            channelId: '',
-            searchMessage: '',
-          },
-          status: {
-            emoji: {
-              attendance: ':office:',
-              telework: ':house_with_garden:',
-              leave: ':soon:',
-            },
-            text: {
-              attendance: '出社しています',
-              telework: 'テレワーク',
-              leave: '退勤しています',
-            },
-          },
-        },
+        defaultValue: applicationConstants.defaultAppSettings,
       }),
     })
 
@@ -354,7 +312,9 @@ function App() {
             </Box>
             <Box>
               <Text size={'sm'}>返信するスレッド</Text>
-              <Conversations conversations={filteredConversations} />
+              <SlackChannelAndConversation
+                conversations={filteredConversations}
+              />
             </Box>
             <Box>
               <form onSubmit={form2.onSubmit(handleSubmit2)}>

@@ -1,7 +1,12 @@
 import { Box, Code, Text } from '@mantine/core'
 import { MessageElement } from '@slack/web-api/dist/types/response/ConversationsHistoryResponse'
+import { FC } from 'react'
 
-export const Conversations = (props: { conversations?: MessageElement }) => {
+type Props = {
+  conversations?: MessageElement
+}
+
+export const SlackChannelAndConversation: FC<Props> = (props: Props) => {
   if (props.conversations === undefined) {
     return (
       <Box>
