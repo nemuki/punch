@@ -43,7 +43,7 @@ export const AuthProvider: FC<AuthProviderProps> = (
     removeLocalStorageSlackOauthToken,
   ] = useLocalStorage<SlackOauthToken>({
     key: 'slackOAuthToken',
-    defaultValue: readLocalStorageValue({
+    defaultValue: readLocalStorageValue<SlackOauthToken>({
       key: 'slackOAuthToken',
       defaultValue: {},
     }),
