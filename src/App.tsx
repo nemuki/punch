@@ -12,8 +12,7 @@ import {
   LocalStorageError,
   PunchInForm,
   SlackChannelAndConversation,
-  SlackConversationSetting,
-  SlackEmojiSetting,
+  SlackSettings,
 } from './components'
 import { useAuth } from './hooks/useAuth.tsx'
 import {
@@ -287,13 +286,16 @@ function App() {
               channelName={conversationsInfo?.channel?.name}
               conversations={filteredConversations}
             />
-            <SlackConversationSetting
+            <SlackSettings
+              isOpen={true}
               conversationSettingForm={conversationSettingForm}
-              handleSubmit={handleSubmitconversationSettingForm}
-            />
-            <SlackEmojiSetting
+              handleSubmitConversationSettingForm={
+                handleSubmitconversationSettingForm
+              }
               statusEmojiSettingsForm={statusEmojiSettingsForm}
-              handleSubmit={handleSubmitStatusEmojiSettingsForm}
+              handleSubmitStatusEmojiSettingsForm={
+                handleSubmitStatusEmojiSettingsForm
+              }
             />
           </Stack>
         </Grid.Col>
