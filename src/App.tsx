@@ -3,7 +3,6 @@ import {
   Button,
   Card,
   Checkbox,
-  Code,
   Grid,
   Group,
   Loader,
@@ -21,7 +20,7 @@ import {
   ConversationsInfoResponse,
 } from '@slack/web-api'
 import { useEffect, useMemo, useState } from 'react'
-import { SlackChannelAndConversation } from './components'
+import { AuthError, SlackChannelAndConversation } from './components'
 import { useAuth } from './hooks/useAuth.tsx'
 import {
   chatPostMessage,
@@ -32,12 +31,7 @@ import { AppSettings, Conversations, PunchInSettings } from './types'
 import { applicationConstants } from './utils/constant.ts'
 
 function App() {
-  const {
-    authIsLoading,
-    authErrorMessage,
-    slackOauthToken,
-    handleRemoveLocalStorageSlackOauthToken,
-  } = useAuth()
+  const { authIsLoading, authErrorMessage, slackOauthToken } = useAuth()
 
   // State
   const [conversationsHistory, setConversationsHistory] = useState<
@@ -241,36 +235,20 @@ function App() {
         >
           Login with Slack
         </Button>
-        <Code block>Not logged in</Code>
       </>
     )
   }
 
   if (authErrorMessage) {
-    return (
-      <>
-        <Button
-          onClick={() => {
-            handleRemoveLocalStorageSlackOauthToken()
-          }}
-        >
-          ログイン情報を削除
-        </Button>
-        <Text c={'red'} fw={500}>
-          {authErrorMessage}
-        </Text>
-      </>
-    )
+    return <AuthError message={authErrorMessage} />
   }
 
   if (authIsLoading) {
     return (
-      <>
-        <Group>
-          <Loader />
-          <Text>Authenticating...</Text>
-        </Group>
-      </>
+      <Group>
+        <Loader />
+        <Text>Authenticating...</Text>
+      </Group>
     )
   }
 
