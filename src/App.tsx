@@ -1,13 +1,4 @@
-import {
-  Button,
-  Grid,
-  Group,
-  Loader,
-  Stack,
-  Text,
-  TextInput,
-  Title,
-} from '@mantine/core'
+import { Button, Grid, Group, Loader, Stack, Text } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { readLocalStorageValue, useLocalStorage } from '@mantine/hooks'
 import { notifications } from '@mantine/notifications'
@@ -21,6 +12,7 @@ import {
   LocalStorageError,
   PunchInForm,
   SlackChannelAndConversation,
+  SlackConversationSettings,
   SlackEmojiSettings,
 } from './components'
 import { useAuth } from './hooks/useAuth.tsx'
@@ -61,7 +53,7 @@ function App() {
   })
 
   // form
-  const form = useForm<Conversations>({
+  const conversationSettingForm = useForm<Conversations>({
     mode: 'uncontrolled',
     initialValues: localStorageAppSettings.conversations,
   })
@@ -83,7 +75,9 @@ function App() {
     return conversationsHistory?.messages
       ?.filter((message) => message.type === 'message')
       .filter((message) =>
-        message?.text?.includes(form.getValues().searchMessage),
+        message?.text?.includes(
+          conversationSettingForm.getValues().searchMessage,
+        ),
       )[0]
   }, [conversationsHistory])
 
@@ -125,7 +119,7 @@ function App() {
     }
   }
 
-  const getConversations = (values: typeof form.values) => {
+  const getConversations = (values: typeof conversationSettingForm.values) => {
     getConversationsInfo(values.channelId)
 
     if (values.searchMessage) {
@@ -182,7 +176,9 @@ function App() {
     return `${baseMessage}終了します\n${values.additionalMessage}`
   }
 
-  const handleSubmit = (values: typeof form.values) => {
+  const handleSubmitconversationSettingForm = (
+    values: typeof conversationSettingForm.values,
+  ) => {
     getConversations(values)
 
     setLocalStorageAppSettings((prev) => ({
@@ -237,8 +233,8 @@ function App() {
    * 初回アクセス時の処理
    */
   useEffect(() => {
-    if (form.values.channelId) {
-      getConversations(form.values)
+    if (conversationSettingForm.values.channelId) {
+      getConversations(conversationSettingForm.values)
     }
 
     if (!isLocalStorageValid(localStorageAppSettings)) {
@@ -287,35 +283,13 @@ function App() {
       <Grid>
         <Grid.Col span={6}>
           <Stack>
-            <form onSubmit={form.onSubmit(handleSubmit)}>
-              <Stack>
-                <Title order={2} size={'sm'}>
-                  Slackチャンネル / スレッド検索
-                </Title>
-                <TextInput
-                  label="チャンネルID"
-                  description="投稿するチャンネルのIDを入力してください"
-                  key={form.key('channelId')}
-                  {...form.getInputProps('channelId')}
-                />
-                <TextInput
-                  label="スレッド検索"
-                  description="検索文言を含む 当日午前6時以降 のメッセージを部分一致で検索します
-指定しない場合はチャンネルに投稿します
-例: 勤怠スレッド"
-                  placeholder="勤怠スレッド"
-                  styles={{ description: { whiteSpace: 'pre-wrap' } }}
-                  key={form.key('searchMessage')}
-                  {...form.getInputProps('searchMessage')}
-                />
-                <Button type={'submit'} w={'fit-content'}>
-                  検索
-                </Button>
-              </Stack>
-            </form>
             <SlackChannelAndConversation
               channelName={conversationsInfo?.channel?.name}
               conversations={filteredConversations}
+            />
+            <SlackConversationSettings
+              conversationSettingForm={conversationSettingForm}
+              handleSubmit={handleSubmitconversationSettingForm}
             />
             <SlackEmojiSettings
               statusEmojiSettingsForm={statusEmojiSettingsForm}
