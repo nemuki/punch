@@ -35,25 +35,30 @@ import {
   PunchInSettings,
   StatusEmojiSettings,
 } from './types'
+import { applicationConstants, isLocalStorageValid } from './utils'
 
 function App() {
   const { authIsLoading, authErrorMessage, slackOauthToken } = useAuth()
 
   // State
+  const [hasLocalStorageError, setHasLocalStorageError] = useState(false)
   const [conversationsHistory, setConversationsHistory] = useState<
     ConversationsHistoryResponse | undefined
   >(undefined)
   const [conversationsInfo, setConversationsInfo] = useState<
     ConversationsInfoResponse | undefined
   >(undefined)
-  const [localStorageAppSettings, setLocalStorageAppSettings] =
-    useLocalStorage<AppSettings>({
+  const [
+    localStorageAppSettings,
+    setLocalStorageAppSettings,
+    removeLocalStorageAppSettings,
+  ] = useLocalStorage<AppSettings>({
+    key: 'appSettings',
+    defaultValue: readLocalStorageValue<AppSettings>({
       key: 'appSettings',
-      defaultValue: readLocalStorageValue<AppSettings>({
-        key: 'appSettings',
-        defaultValue: applicationConstants.defaultAppSettings,
-      }),
-    })
+      defaultValue: applicationConstants.defaultAppSettings,
+    }),
+  })
 
   // form
   const form = useForm<Conversations>({
@@ -232,7 +237,23 @@ function App() {
     if (form.values.channelId) {
       getConversations(form.values)
     }
+
+    if (!isLocalStorageValid(localStorageAppSettings)) {
+      setHasLocalStorageError(true)
+    }
   }, [])
+
+  if (hasLocalStorageError) {
+    return (
+      <Stack>
+        <Group>
+          <Text>Local Storage に保存された設定情報が不正です</Text>
+          <Text>設定情報を初期化します</Text>
+        </Group>
+        <Button onClick={() => removeLocalStorageAppSettings()}>初期化</Button>
+      </Stack>
+    )
+  }
 
   if (Object.keys(slackOauthToken).length === 0) {
     return (
