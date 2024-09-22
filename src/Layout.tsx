@@ -1,4 +1,4 @@
-import { AppShell, Group, Title } from '@mantine/core'
+import { AppShell, Container, Group, Title } from '@mantine/core'
 import React, { FC } from 'react'
 import { User } from './components/User.tsx'
 
@@ -17,7 +17,9 @@ export const Layout: FC<Props> = (props: Props) => {
           <User />
         </Group>
       </AppShell.Header>
-      <AppShell.Main>{props.children}</AppShell.Main>
+      <AppShell.Main>
+        <Container>{props.children}</Container>
+      </AppShell.Main>
     </AppShell>
   )
 }

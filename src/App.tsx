@@ -5,7 +5,6 @@ import {
   Card,
   Checkbox,
   Code,
-  Container,
   Grid,
   Group,
   Loader,
@@ -279,7 +278,7 @@ function App() {
 
   if (Object.keys(slackOauthToken).length === 0) {
     return (
-      <Container>
+      <>
         <Button
           component={'a'}
           href={applicationConstants.slackOauthAuthorizeUrl}
@@ -287,13 +286,13 @@ function App() {
           Login with Slack
         </Button>
         <Code block>Not logged in</Code>
-      </Container>
+      </>
     )
   }
 
   if (authErrorMessage) {
     return (
-      <Container>
+      <>
         <Button
           onClick={() => {
             handleRemoveLocalStorageSlackOauthToken()
@@ -304,23 +303,23 @@ function App() {
         <Text c={'red'} fw={500}>
           {authErrorMessage}
         </Text>
-      </Container>
+      </>
     )
   }
 
   if (authIsLoading || !userProfile) {
     return (
-      <Container>
+      <>
         <Group>
           <Loader />
           <Text>Authenticating...</Text>
         </Group>
-      </Container>
+      </>
     )
   }
 
   return (
-    <Container>
+    <>
       <Grid>
         <Grid.Col span={6}>
           <Stack>
@@ -483,7 +482,7 @@ function App() {
           </form>
         </Grid.Col>
       </Grid>
-    </Container>
+    </>
   )
 }
 
