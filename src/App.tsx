@@ -27,7 +27,7 @@ import {
   chatPostMessage,
   fetchConversationsHistory,
   fetchConversationsInfo,
-} from './slackApi.ts'
+} from './infra/slackApi.ts'
 import { applicationConstants } from './utils/constant.ts'
 
 type Conversations = {

@@ -1,7 +1,7 @@
 import { readLocalStorageValue, useLocalStorage } from '@mantine/hooks'
 import { UsersProfileGetResponse } from '@slack/web-api'
 import React, { FC, useEffect, useState } from 'react'
-import { fetchToken, fetchUserProfile, revokeToken } from '../slackApi.ts'
+import { fetchToken, fetchUserProfile, revokeToken } from '../infra/slackApi.ts'
 
 type SlackOauthToken = {
   accessToken?: string
