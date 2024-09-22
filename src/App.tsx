@@ -20,11 +20,11 @@ import {
 import { useEffect, useMemo, useState } from 'react'
 import {
   AuthError,
+  LocalStorageError,
   PunchInForm,
   SlackChannelAndConversation,
   SlackEmojiSettings,
 } from './components'
-import { LocalStorageError } from './components/LocalStorageError.tsx'
 import { useAuth } from './hooks/useAuth.tsx'
 import {
   chatPostMessage,
