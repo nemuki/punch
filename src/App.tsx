@@ -62,8 +62,6 @@ function App() {
     authIsLoading,
     authErrorMessage,
     slackOauthToken,
-    userProfile,
-    handleLogout,
     handleRemoveLocalStorageSlackOauthToken,
   } = useAuth()
 
@@ -307,7 +305,7 @@ function App() {
     )
   }
 
-  if (authIsLoading || !userProfile) {
+  if (authIsLoading) {
     return (
       <>
         <Group>
@@ -323,20 +321,6 @@ function App() {
       <Grid>
         <Grid.Col span={6}>
           <Stack>
-            <Stack>
-              <Group>
-                <Avatar src={userProfile.profile?.image_192} />
-                <Text>{userProfile.profile?.real_name} でログイン中</Text>
-              </Group>
-              <Button
-                onClick={() => {
-                  handleLogout()
-                }}
-                w={'fit-content'}
-              >
-                ログアウト
-              </Button>
-            </Stack>
             <form onSubmit={form.onSubmit(handleSubmit)}>
               <Stack>
                 <TextInput
