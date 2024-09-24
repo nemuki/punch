@@ -1,4 +1,6 @@
 import {
+  Avatar,
+  Box,
   Button,
   Card,
   Checkbox,
@@ -10,6 +12,7 @@ import {
 } from '@mantine/core'
 import { UseFormReturnType } from '@mantine/form'
 import { FC } from 'react'
+import { useAuth } from '../hooks/useAuth.tsx'
 import { PunchInSettings } from '../types'
 
 type Props = {
@@ -19,8 +22,13 @@ type Props = {
 }
 
 export const PunchInForm: FC<Props> = (props: Props) => {
+  const { userProfile } = useAuth()
+
   return (
-    <form onSubmit={props.punchInForm.onSubmit(props.handleSubmitPunchInForm)}>
+    <form
+      action={'/punch'}
+      onSubmit={props.punchInForm.onSubmit(props.handleSubmitPunchInForm)}
+    >
       <Stack>
         <Textarea
           label="追加メッセージ"
@@ -29,16 +37,16 @@ export const PunchInForm: FC<Props> = (props: Props) => {
           {...props.punchInForm.getInputProps('additionalMessage')}
         />
         <Checkbox
-          description={'出勤時は9時間後、退勤時は24時に削除されます'}
-          label={'ステータス絵文字を変更する'}
-          key={props.punchInForm.key('changeStatusEmoji')}
-          {...props.punchInForm.getInputProps('changeStatusEmoji')}
-        ></Checkbox>
-        <Checkbox
           description={'デフォルトはテレワーク'}
           label={'出社時はチェック'}
           key={props.punchInForm.key('inOffice')}
           {...props.punchInForm.getInputProps('inOffice')}
+        ></Checkbox>
+        <Checkbox
+          description={'出勤時は9時間後、退勤時は24時に削除されます'}
+          label={'ステータス絵文字を変更する'}
+          key={props.punchInForm.key('changeStatusEmoji')}
+          {...props.punchInForm.getInputProps('changeStatusEmoji')}
         ></Checkbox>
         <Group grow>
           <Button
@@ -69,13 +77,27 @@ export const PunchInForm: FC<Props> = (props: Props) => {
           送信メッセージプレビュー
         </Title>
         <Card withBorder>
-          <Text>
-            {props.getWorkStatus(props.punchInForm.values.inOffice)}
-            開始 / 終了します
-          </Text>
-          <Text inherit style={{ whiteSpace: 'pre-wrap' }}>
-            {props.punchInForm.values.additionalMessage}
-          </Text>
+          <Stack>
+            {userProfile?.profile && (
+              <Group>
+                <Avatar
+                  radius="sm"
+                  size={'sm'}
+                  src={userProfile.profile?.image_192}
+                />
+                <Text fw={700}>{userProfile.profile?.real_name}</Text>
+              </Group>
+            )}
+            <Box>
+              <Text>
+                {props.getWorkStatus(props.punchInForm.values.inOffice)}
+                開始 / 終了します
+              </Text>
+              <Text inherit style={{ whiteSpace: 'pre-wrap' }}>
+                {props.punchInForm.values.additionalMessage}
+              </Text>
+            </Box>
+          </Stack>
         </Card>
       </Stack>
     </form>

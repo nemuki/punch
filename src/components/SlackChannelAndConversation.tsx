@@ -98,7 +98,7 @@ const Conversations: FC<ConversationsProps> = (props: ConversationsProps) => {
     return (
       <CardTemplate title={title}>
         <Text>スレッドが見つかりませんでした。</Text>
-        <Text>チャンネルに投稿します。</Text>
+        <Text fw={700}>チャンネルに投稿します。</Text>
       </CardTemplate>
     )
   }
