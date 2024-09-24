@@ -6,6 +6,7 @@ import {
   fetchUserProfile,
   revokeToken,
 } from '../infra/api/slack.ts'
+import { applicationConstants } from '../utils'
 
 type SlackOauthToken = {
   accessToken?: string
@@ -46,9 +47,9 @@ export const AuthProvider: FC<AuthProviderProps> = (
     setLocalStorageSlackOauthToken,
     removeLocalStorageSlackOauthToken,
   ] = useLocalStorage<SlackOauthToken>({
-    key: 'slackOAuthToken',
+    key: applicationConstants.slackOauthTokenLocalStorageKey,
     defaultValue: readLocalStorageValue<SlackOauthToken>({
-      key: 'slackOAuthToken',
+      key: applicationConstants.slackOauthTokenLocalStorageKey,
       defaultValue: {},
     }),
   })

@@ -13,6 +13,9 @@ slackOauthAuthorizeUrl.searchParams.append(
   'channels:history,channels:read,users.profile:read,users.profile:write,chat:write',
 )
 
+const slackOauthTokenLocalStorageKey: string = 'punch-slack-oauth-token'
+const appSettingsLocalStorageKey: string = 'punch-app-settings'
+
 const defaultAppSettings: AppSettings = {
   conversations: {
     channelId: '',
@@ -35,4 +38,6 @@ const defaultAppSettings: AppSettings = {
 export const applicationConstants = {
   slackOauthAuthorizeUrl: slackOauthAuthorizeUrl.toString(),
   defaultAppSettings,
+  slackOauthTokenLocalStorageKey,
+  appSettingsLocalStorageKey,
 } as const

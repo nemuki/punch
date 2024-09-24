@@ -52,9 +52,9 @@ function App() {
     setLocalStorageAppSettings,
     removeLocalStorageAppSettings,
   ] = useLocalStorage<AppSettings>({
-    key: 'appSettings',
+    key: applicationConstants.appSettingsLocalStorageKey,
     defaultValue: readLocalStorageValue<AppSettings>({
-      key: 'appSettings',
+      key: applicationConstants.appSettingsLocalStorageKey,
       defaultValue: applicationConstants.defaultAppSettings,
     }),
   })
