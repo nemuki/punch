@@ -9,53 +9,53 @@ importers:
   .:
     dependencies:
       '@mantine/core':
-        specifier: ^7.12.2
+        specifier: 7.12.2
         version: 7.12.2(@mantine/hooks@7.12.2(react@18.3.1))(@types/react@18.3.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@mantine/form':
-        specifier: ^7.12.2
+        specifier: 7.12.2
         version: 7.12.2(react@18.3.1)
       '@mantine/hooks':
-        specifier: ^7.12.2
+        specifier: 7.12.2
         version: 7.12.2(react@18.3.1)
       '@mantine/notifications':
-        specifier: ^7.12.2
+        specifier: 7.12.2
         version: 7.12.2(@mantine/core@7.12.2(@mantine/hooks@7.12.2(react@18.3.1))(@types/react@18.3.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.12.2(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
-        specifier: ^18.3.1
+        specifier: 18.3.1
         version: 18.3.1
       react-dom:
-        specifier: ^18.3.1
+        specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
     devDependencies:
       '@biomejs/biome':
         specifier: 1.9.2
         version: 1.9.2
       '@slack/web-api':
-        specifier: ^7.5.0
+        specifier: 7.5.0
         version: 7.5.0
       '@types/react':
-        specifier: ^18.3.8
+        specifier: 18.3.8
         version: 18.3.8
       '@types/react-dom':
-        specifier: ^18.3.0
+        specifier: 18.3.0
         version: 18.3.0
       '@vitejs/plugin-react':
-        specifier: ^4.3.1
+        specifier: 4.3.1
         version: 4.3.1(vite@5.4.7(@types/node@22.5.5)(sugarss@4.0.1(postcss@8.4.47)))
       postcss:
-        specifier: ^8.4.47
+        specifier: 8.4.47
         version: 8.4.47
       postcss-preset-mantine:
-        specifier: ^1.17.0
+        specifier: 1.17.0
         version: 1.17.0(postcss@8.4.47)
       postcss-simple-vars:
-        specifier: ^7.0.1
+        specifier: 7.0.1
         version: 7.0.1(postcss@8.4.47)
       typescript:
-        specifier: ^5.6.2
+        specifier: 5.6.2
         version: 5.6.2
       vite:
-        specifier: ^5.4.7
+        specifier: 5.4.7
         version: 5.4.7(@types/node@22.5.5)(sugarss@4.0.1(postcss@8.4.47))
 
 packages:
