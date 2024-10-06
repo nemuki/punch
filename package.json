@@ -9,14 +9,14 @@
   "packageManager": "pnpm@9.11.0",
   "scripts": {
     "dev": "vite",
+    "preview": "vite preview",
     "build": "tsc && vite build",
     "check": "biome check .",
     "lint": "biome lint .",
     "format": "biome format .",
     "check:fix": "biome check --write .",
     "lint:fix": "biome lint --write .",
-    "format:fix": "biome format --write .",
-    "preview": "vite preview"
+    "format:fix": "biome format --write ."
   },
   "dependencies": {
     "@mantine/core": "7.12.2",
