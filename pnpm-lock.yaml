@@ -31,8 +31,8 @@ importers:
         specifier: 1.9.3
         version: 1.9.3
       '@slack/web-api':
-        specifier: 7.5.0
-        version: 7.5.0
+        specifier: 7.6.0
+        version: 7.6.0
       '@types/react':
         specifier: 18.3.11
         version: 18.3.11
@@ -52,8 +52,8 @@ importers:
         specifier: 7.0.1
         version: 7.0.1(postcss@8.4.47)
       typescript:
-        specifier: 5.6.2
-        version: 5.6.2
+        specifier: 5.6.3
+        version: 5.6.3
       vite:
         specifier: 5.4.8
         version: 5.4.8(@types/node@22.5.5)(sugarss@4.0.1(postcss@8.4.47))
@@ -515,8 +515,8 @@ packages:
     resolution: {integrity: sha512-n0EGm7ENQRxlXbgKSrQZL69grzg1gHLAVd+GlRVQJ1NSORo0FrApR7wql/gaKdu2n4TO83Sq/AmeUOqD60aXUA==}
     engines: {node: '>= 12.13.0', npm: '>= 6.12.0'}
 
-  '@slack/web-api@7.5.0':
-    resolution: {integrity: sha512-e1aRwbdnTVz0uQownF8UoyrQFdSs3uXtkPYWCpcb3fW3KuTEGvmEtVzAvj9gqNSlgpWj0o6is7AdptQCELd/rQ==}
+  '@slack/web-api@7.6.0':
+    resolution: {integrity: sha512-1u9JnP12RPk8ChF8RXKKoVtlox9HlZXhf+6lvvRORKxRd4+8ZQ41KskhPO6WiD0Q+wE6k/M6U627BXzVzBcVNA==}
     engines: {node: '>= 18', npm: '>= 8.6.0'}
 
   '@types/babel__core@7.20.5':
@@ -971,8 +971,8 @@ packages:
     resolution: {integrity: sha512-OduNjVJsFbifKb57UqZ2EMP1i4u64Xwow3NYXUtBbD4vIwJdQd4+xl8YDou1dlm4DVrtwT/7Ky8z8WyCULVfxw==}
     engines: {node: '>=16'}
 
-  typescript@5.6.2:
-    resolution: {integrity: sha512-NW8ByodCSNCwZeghjN3o+JX5OFH0Ojg6sadjEKY4huZ52TqbJTJnDo5+Tw98lSy63NZvi4n+ez5m2u5d4PkZyw==}
+  typescript@5.6.3:
+    resolution: {integrity: sha512-hjcS1mhfuyi4WW8IWtjP7brDrG2cuDZukyrYrSauoXGNgx0S7zceP07adYkJycEr56BOUTNPzbInooiN3fn1qw==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -1449,7 +1449,7 @@ snapshots:
 
   '@slack/types@2.14.0': {}
 
-  '@slack/web-api@7.5.0':
+  '@slack/web-api@7.6.0':
     dependencies:
       '@slack/logger': 4.0.0
       '@slack/types': 2.14.0
@@ -1907,7 +1907,7 @@ snapshots:
 
   type-fest@4.26.0: {}
 
-  typescript@5.6.2: {}
+  typescript@5.6.3: {}
 
   undici-types@6.19.8: {}
 
