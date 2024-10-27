@@ -1,6 +1,7 @@
 import { AppShell, Container, Group, Title } from '@mantine/core'
 import React, { FC } from 'react'
 import { User } from './components'
+import { Maintainer } from './components/Maintainer.tsx'
 
 type Props = {
   children: React.ReactNode
@@ -14,6 +15,7 @@ export const Layout: FC<Props> = (props: Props) => {
           <Title order={1} size="h3">
             Punch 👊
           </Title>
+          <Maintainer />
           <User />
         </Group>
       </AppShell.Header>
