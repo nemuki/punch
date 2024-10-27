@@ -6,10 +6,14 @@ const getEnvValue = (key: string): string => {
   return value
 }
 
+const getNullableEnvValue = (key: string): string | undefined => {
+  return import.meta.env[key]
+}
+
 export const env = {
   SLACK_CLIENT_ID: getEnvValue('VITE_SLACK_CLIENT_ID'),
   SLACK_CLIENT_SECRET: getEnvValue('VITE_SLACK_CLIENT_SECRET'),
   SLACK_REDIRECT_URI: getEnvValue('VITE_SLACK_REDIRECT_URI'),
-  USAGE_URL: getEnvValue('VITE_USAGE_URL'),
-  MAINTAINER_URL: getEnvValue('VITE_MAINTAINER_URL'),
+  USAGE_URL: getNullableEnvValue('VITE_USAGE_URL'),
+  MAINTAINER_URL: getNullableEnvValue('VITE_MAINTAINER_URL'),
 } as const
