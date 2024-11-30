@@ -12,29 +12,32 @@ import {
 
 export const getConversations = async (args: {
   channelId: string
-  setConversationsHistory: (value: ConversationsHistoryResponse) => void
-  setConversationsInfo: (value: ConversationsInfoResponse) => void
   accessToken?: string
   searchMessage?: string
-}) => {
+}): Promise<{
+  conversationsInfo?: ConversationsInfoResponse
+  conversationsHistory?: ConversationsHistoryResponse
+}> => {
   const conversationsInfo = await getConversationsInfo({
     channelId: args.channelId,
     accessToken: args.accessToken,
   })
 
-  if (conversationsInfo) {
-    args.setConversationsInfo(conversationsInfo)
+  if (!args.searchMessage) {
+    return {
+      conversationsInfo: conversationsInfo,
+      conversationsHistory: undefined,
+    }
   }
 
-  if (args.searchMessage) {
-    const conversationsHistory = await getConversationsHistory({
-      channelId: args.channelId,
-      accessToken: args.accessToken,
-    })
+  const conversationsHistory = await getConversationsHistory({
+    channelId: args.channelId,
+    accessToken: args.accessToken,
+  })
 
-    if (conversationsHistory) {
-      args.setConversationsHistory(conversationsHistory)
-    }
+  return {
+    conversationsInfo: conversationsInfo,
+    conversationsHistory: conversationsHistory,
   }
 }
 

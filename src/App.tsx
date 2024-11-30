@@ -101,16 +101,17 @@ function App() {
     return `${baseMessage}終了します\n${values.additionalMessage}`
   }
 
-  const handleSubmitConversationSettingForm = (
+  const handleSubmitConversationSettingForm = async (
     values: typeof conversationSettingForm.values,
   ) => {
-    getConversations({
+    const result = await getConversations({
       channelId: values.channelId,
-      setConversationsHistory,
-      setConversationsInfo,
-      accessToken: slackOauthToken.accessToken,
       searchMessage: values.searchMessage,
+      accessToken: slackOauthToken.accessToken,
     })
+
+    setConversationsInfo(result.conversationsInfo)
+    setConversationsHistory(result.conversationsHistory)
 
     setLocalStorageAppSettings((prev) => ({
       ...prev,
@@ -200,13 +201,14 @@ function App() {
   useEffect(() => {
     ;(async () => {
       if (conversationSettingForm.values.channelId) {
-        await getConversations({
+        const result = await getConversations({
           channelId: conversationSettingForm.values.channelId,
-          setConversationsHistory,
-          setConversationsInfo,
-          accessToken: slackOauthToken.accessToken,
           searchMessage: conversationSettingForm.values.searchMessage,
+          accessToken: slackOauthToken.accessToken,
         })
+
+        setConversationsInfo(result.conversationsInfo)
+        setConversationsHistory(result.conversationsHistory)
       } else {
         setIsSettingsOpen()
       }
