@@ -2,11 +2,7 @@ import { AppSettings } from '../types'
 
 // biome-ignore lint/suspicious/noExplicitAny: any is used to validate the type of localStorage value
 export const isLocalStorageValid = (value: any): value is AppSettings => {
-  if (typeof value.conversations.channelId !== 'string') {
-    return false
-  }
-
-  if (typeof value.conversations.searchMessage !== 'string') {
+  if (!Array.isArray(value.conversations)) {
     return false
   }
 

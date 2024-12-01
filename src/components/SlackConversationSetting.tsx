@@ -1,27 +1,65 @@
-import { Button, Card, Stack, TextInput, Title } from '@mantine/core'
-import { UseFormReturnType } from '@mantine/form'
+import { Button, Card, Group, Stack, TextInput, Title } from '@mantine/core'
+import { randomId } from '@mantine/hooks'
 import { FC } from 'react'
-import { Conversation } from '../types'
+import { useAppSettingsFormContext } from '../context/form-context'
 
 type Props = {
-  conversationSettingForm: UseFormReturnType<Conversation>
-  handleSubmit: (values: Conversation) => void
+  deleteConversation: (index: number) => void
 }
 
 export const SlackConversationSetting: FC<Props> = (props: Props) => {
+  const form = useAppSettingsFormContext()
+  const conversations = form.getValues().conversations
+
+  if (!Array.isArray(conversations)) {
+    return null
+  }
+
   return (
-    <form onSubmit={props.conversationSettingForm.onSubmit(props.handleSubmit)}>
-      <Stack>
-        <Title order={3} size={'sm'}>
-          Slackチャンネル / スレッド検索
+    <Stack>
+      <Group>
+        <Title order={2} size={'h5'}>
+          Slackチャンネル / スレッド設定
         </Title>
-        <Card withBorder>
+        <Button
+          onClick={() => {
+            form.insertListItem('conversations', {
+              id: randomId(),
+              channelId: '',
+              searchMessage: '',
+            })
+          }}
+          w={'fit-content'}
+          size={'xs'}
+        >
+          チャンネル追加
+        </Button>
+      </Group>
+      {conversations.map((conversation, index) => (
+        <Card withBorder key={conversation.id}>
           <Stack>
+            <Group>
+              <Title order={3} size={'h6'}>
+                チャンネル {index + 1}
+              </Title>
+              {conversations.length > 1 && (
+                <Button
+                  color={'red'}
+                  onClick={() => {
+                    props.deleteConversation(index)
+                  }}
+                  size="xs"
+                >
+                  削除
+                </Button>
+              )}
+            </Group>
             <TextInput
+              withAsterisk
               label="チャンネルID"
               description="投稿するチャンネルのIDを入力してください"
-              key={props.conversationSettingForm.key('channelId')}
-              {...props.conversationSettingForm.getInputProps('channelId')}
+              key={form.key(`conversations.${index}.channelId`)}
+              {...form.getInputProps(`conversations.${index}.channelId`)}
             />
             <TextInput
               label="スレッド検索"
@@ -30,15 +68,15 @@ export const SlackConversationSetting: FC<Props> = (props: Props) => {
 例: 勤怠スレッド"
               placeholder="勤怠スレッド"
               styles={{ description: { whiteSpace: 'pre-wrap' } }}
-              key={props.conversationSettingForm.key('searchMessage')}
-              {...props.conversationSettingForm.getInputProps('searchMessage')}
+              key={form.key(`conversations.${index}.searchMessage`)}
+              {...form.getInputProps(`conversations.${index}.searchMessage`)}
             />
-            <Button type={'submit'} w={'fit-content'}>
-              検索
-            </Button>
           </Stack>
         </Card>
-      </Stack>
-    </form>
+      ))}
+      <Button type={'submit'} w={'fit-content'}>
+        保存と検索
+      </Button>
+    </Stack>
   )
 }

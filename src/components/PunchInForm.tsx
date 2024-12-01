@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Card,
+  Center,
   Checkbox,
   Group,
   Stack,
@@ -14,6 +15,7 @@ import { UseFormReturnType } from '@mantine/form'
 import { FC } from 'react'
 import { useAuth } from '../hooks/useAuth.tsx'
 import { PunchInSettings } from '../types'
+import { Clock } from './Clock.tsx'
 
 type Props = {
   punchInForm: UseFormReturnType<PunchInSettings>
@@ -41,13 +43,16 @@ export const PunchInForm: FC<Props> = (props: Props) => {
           label={'出社時はチェック'}
           key={props.punchInForm.key('inOffice')}
           {...props.punchInForm.getInputProps('inOffice')}
-        ></Checkbox>
+        />
         <Checkbox
           description={'出勤時は9時間後、退勤時は24時に削除されます'}
           label={'ステータス絵文字を変更する'}
           key={props.punchInForm.key('changeStatusEmoji')}
           {...props.punchInForm.getInputProps('changeStatusEmoji')}
-        ></Checkbox>
+        />
+        <Center>
+          <Clock />
+        </Center>
         <Group grow>
           <Button
             type={'submit'}
