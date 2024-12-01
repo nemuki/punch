@@ -1,4 +1,5 @@
 export { AuthError } from './AuthError'
+export { Clock } from './Clock'
 export { SlackChannelAndConversations } from './SlackChannelAndConversations'
 export { User } from './User'
 export { PunchInForm } from './PunchInForm'

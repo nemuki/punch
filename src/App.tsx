@@ -250,9 +250,7 @@ function App() {
 
   // Render
   if (hasLocalStorageError) {
-    return (
-      <LocalStorageError />
-    )
+    return <LocalStorageError />
   }
 
   if (Object.keys(slackOauthToken).length === 0) {
