@@ -5,7 +5,7 @@ export const isLocalStorageValid = (value: any): value is AppSettings => {
   if (!Array.isArray(value.conversations)) {
     return false
   }
-  
+
   if (typeof value.status.emoji.office !== 'string') {
     return false
   }
