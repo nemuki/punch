@@ -1,22 +1,24 @@
 export type AppSettings = {
-  conversations: Conversation
+  conversations: Conversations
   status: StatusEmojiSetting
 }
+
+export type Conversations = Conversation[]
 
 export type Conversation = {
   channelId: string
   searchMessage: string
 }
 
+export type StatusEmojiSetting = {
+  emoji: WorkStatus
+  text: WorkStatus
+}
+
 export type WorkStatus = {
   office: string
   telework: string
   leave: string
-}
-
-export type StatusEmojiSetting = {
-  emoji: WorkStatus
-  text: WorkStatus
 }
 
 export type PunchInSettings = {

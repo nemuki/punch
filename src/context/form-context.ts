@@ -1,17 +1,11 @@
 import { createFormContext } from '@mantine/form'
-import { Conversation, PunchInSettings, StatusEmojiSetting } from '../types'
+import { AppSettings, PunchInSettings } from '../types'
 
 export const [
-  ConversationSettingFormProvider,
-  useConversationSettingFormContext,
-  useConversationSettingForm,
-] = createFormContext<Conversation>()
-
-export const [
-  StatusEmojiSettingFormProvider,
-  useStatusEmojiSettingFormContext,
-  useStatusEmojiSettingForm,
-] = createFormContext<StatusEmojiSetting>()
+  AppSettingsFormProvider,
+  useAppSettingsFormContext,
+  useAppSettingsForm,
+] = createFormContext<AppSettings>()
 
 export const [
   PunchInSettingFormProvider,

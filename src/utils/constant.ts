@@ -17,10 +17,12 @@ const slackOauthTokenLocalStorageKey: string = 'punch-slack-oauth-token'
 const appSettingsLocalStorageKey: string = 'punch-app-settings'
 
 const defaultAppSettings: AppSettings = {
-  conversations: {
-    channelId: '',
-    searchMessage: '',
-  },
+  conversations: [
+    {
+      channelId: '',
+      searchMessage: '',
+    },
+  ],
   status: {
     emoji: {
       office: ':office:',

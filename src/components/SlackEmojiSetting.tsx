@@ -9,7 +9,7 @@ import {
   Title,
 } from '@mantine/core'
 import { FC } from 'react'
-import { useStatusEmojiSettingFormContext } from '../context/form-context'
+import { useAppSettingsFormContext } from '../context/form-context'
 
 export const SlackEmojiSetting: FC = () => {
   return (
@@ -39,7 +39,7 @@ type StatusEmojiInputProps = {
 const StatusEmojiInput: FC<StatusEmojiInputProps> = (
   props: StatusEmojiInputProps,
 ) => {
-  const form = useStatusEmojiSettingFormContext()
+  const form = useAppSettingsFormContext()
 
   return (
     <Box>
@@ -47,13 +47,13 @@ const StatusEmojiInput: FC<StatusEmojiInputProps> = (
       <Group grow>
         <TextInput
           label="絵文字"
-          key={form.key(`emoji.${props.emojiKey}`)}
-          {...form.getInputProps(`emoji.${props.emojiKey}`)}
+          key={form.key(`status.emoji.${props.emojiKey}`)}
+          {...form.getInputProps(`status.emoji.${props.emojiKey}`)}
         />
         <TextInput
           label="絵文字メッセージ"
-          key={form.key(`text.${props.emojiKey}`)}
-          {...form.getInputProps(`text.${props.emojiKey}`)}
+          key={form.key(`status.text.${props.emojiKey}`)}
+          {...form.getInputProps(`status.text.${props.emojiKey}`)}
         />
       </Group>
     </Box>
