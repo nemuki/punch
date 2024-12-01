@@ -85,7 +85,7 @@ export const AuthProvider: FC<AuthProviderProps> = (
     })()
 
     setAuthIsLoading(false)
-  }, [oauthAuthorizationCode])
+  }, [oauthAuthorizationCode, localStorageSlackOauthToken])
 
   const handleSetError = (
     message: string,
