@@ -4,15 +4,11 @@ import {
   useDisclosure,
   useLocalStorage,
 } from '@mantine/hooks'
-import {
-  ConversationsHistoryResponse,
-  ConversationsInfoResponse,
-} from '@slack/web-api'
 import { useEffect, useMemo, useState } from 'react'
 import {
   AuthError,
   PunchInForm,
-  SlackChannelAndConversation,
+  SlackChannelAndConversations,
   SlackConversationSetting,
   SlackEmojiSetting,
 } from './components'
@@ -27,24 +23,29 @@ import {
   postMessage,
   updateEmoji,
 } from './infra/repository/slack.ts'
-import { AppSettings, PunchInSettings } from './types'
+import {
+  AppSettings,
+  PunchInSettings,
+  RawSlackConversations,
+  SlackConversation,
+  SlackConversations,
+} from './types'
 import { applicationConstants } from './utils'
 
 function App() {
   const { authErrorMessage, slackOauthToken } = useAuth()
 
   // State
+  const [isConversationsFetching, setIsConversationsFetching] = useState(true)
+  const [slackConversations, setSlackConversations] = useState<
+    RawSlackConversations | undefined
+  >(undefined)
+
   const [
     isSettingsOpen,
     { toggle: toggleSettingsOpen, open: setIsSettingsOpen },
   ] = useDisclosure(false)
-  const [isConversationsFetching, setIsConversationsFetching] = useState(true)
-  const [conversationsHistory, setConversationsHistory] = useState<
-    ConversationsHistoryResponse | undefined
-  >(undefined)
-  const [conversationsInfo, setConversationsInfo] = useState<
-    ConversationsInfoResponse | undefined
-  >(undefined)
+
   const [localStorageAppSettings, setLocalStorageAppSettings] =
     useLocalStorage<AppSettings>({
       key: applicationConstants.appSettingsLocalStorageKey,
@@ -58,6 +59,15 @@ function App() {
   const appSettingsForm = useAppSettingsForm({
     mode: 'controlled',
     initialValues: localStorageAppSettings,
+    validate: {
+      conversations: {
+        channelId: (value) => {
+          if (!value) {
+            return 'チャンネルIDは必須です'
+          }
+        },
+      },
+    },
   })
   const punchInForm = usePunchInSettingForm({
     mode: 'controlled',
@@ -69,15 +79,44 @@ function App() {
     },
   })
 
-  const filteredConversations = useMemo(() => {
-    return conversationsHistory?.messages
-      ?.filter((message) => message.type === 'message')
-      .filter((message) =>
-        message?.text?.includes(
-          appSettingsForm.getValues().conversations.searchMessage,
-        ),
-      )[0]
-  }, [conversationsHistory])
+  const filteredSlackConversations = useMemo<SlackConversations>(() => {
+    if (slackConversations) {
+      const appSettingsFormValues = appSettingsForm.getValues()
+
+      return slackConversations.map((conversation) => {
+        const channelId = conversation.conversationsInfo?.channel?.id || ''
+        const searchMessage = appSettingsFormValues.conversations.find(
+          (item) =>
+            item.channelId === conversation.conversationsInfo?.channel?.id,
+        )?.searchMessage
+
+        const baseResult: SlackConversation = {
+          channelId: channelId,
+          channelName: conversation.conversationsInfo?.channel?.name || '',
+          workspaceId:
+            conversation.conversationsInfo?.channel?.context_team_id || '',
+        }
+
+        if (!searchMessage) {
+          return baseResult
+        }
+
+        const threadText = conversation.conversationsHistory?.messages
+          ?.filter((message) => message.type === 'message')
+          .filter((message) => message?.text?.includes(searchMessage))[0]
+
+        return {
+          ...baseResult,
+          threadTs: threadText?.ts,
+          threadText: threadText?.text,
+        }
+      })
+    } else {
+      const empty: SlackConversation = {}
+
+      return localStorageAppSettings.conversations.map(() => empty)
+    }
+  }, [slackConversations])
 
   const getWorkStatus = (attendance: boolean): string =>
     attendance ? '業務' : 'テレワーク'
@@ -94,13 +133,18 @@ function App() {
 
   const deleteConversation = (index: number) => {
     appSettingsForm.removeListItem('conversations', index)
-
     handleSubmitAppSettingsForm(appSettingsForm.getValues())
   }
 
-  const handleSubmitAppSettingsForm = (
+  const handleSubmitAppSettingsForm = async (
     values: typeof appSettingsForm.values,
   ) => {
+    const result = await getConversations({
+      conversations: values.conversations,
+      accessToken: slackOauthToken.accessToken,
+    })
+
+    setSlackConversations(result)
     setLocalStorageAppSettings(values)
   }
 
@@ -111,8 +155,6 @@ function App() {
     if (values.punchIn === undefined) {
       return
     }
-
-    const channelId = localStorageAppSettings.conversations.channelId
 
     const nineHoursLater = new Date()
     nineHoursLater.setHours(nineHoursLater.getHours() + 9)
@@ -178,12 +220,11 @@ function App() {
     ;(async () => {
       if (appSettingsForm.values.conversations[0].channelId) {
         const result = await getConversations({
-          channelId: appSettingsForm.values.conversations[0].channelId,
+          conversations: appSettingsForm.values.conversations,
           accessToken: slackOauthToken.accessToken,
         })
 
-        setConversationsInfo(result.conversationsInfo)
-        setConversationsHistory(result.conversationsHistory)
+        setSlackConversations(result)
       } else {
         setIsSettingsOpen()
       }
@@ -212,9 +253,8 @@ function App() {
     <Grid>
       <Grid.Col span={6}>
         <Stack>
-          <SlackChannelAndConversation
-            conversationsInfo={conversationsInfo}
-            conversations={filteredConversations}
+          <SlackChannelAndConversations
+            slackConversations={filteredSlackConversations}
             isFetching={isConversationsFetching}
           />
           <Button onClick={toggleSettingsOpen}>Slack設定を開く</Button>

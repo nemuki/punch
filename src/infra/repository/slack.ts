@@ -3,6 +3,8 @@ import {
   ConversationsHistoryResponse,
   ConversationsInfoResponse,
 } from '@slack/web-api'
+import { Conversations } from '../../types/app-settings.ts'
+import { RawSlackConversations } from '../../types/index.ts'
 import {
   chatPostMessage,
   fetchConversationsHistory,
@@ -11,34 +13,26 @@ import {
 } from '../api/slack.ts'
 
 export const getConversations = async (args: {
-  channelId: string
+  conversations: Conversations
   accessToken?: string
-  searchMessage?: string
-}): Promise<{
-  conversationsInfo?: ConversationsInfoResponse
-  conversationsHistory?: ConversationsHistoryResponse
-}> => {
-  const conversationsInfo = await getConversationsInfo({
-    channelId: args.channelId,
-    accessToken: args.accessToken,
-  })
+}): Promise<RawSlackConversations> => {
+  const results = await Promise.all(
+    args.conversations.map(async (conversation) => {
+      const conversationsInfo = await getConversationsInfo({
+        channelId: conversation.channelId,
+        accessToken: args.accessToken,
+      })
 
-  if (!args.searchMessage) {
-    return {
-      conversationsInfo: conversationsInfo,
-      conversationsHistory: undefined,
-    }
-  }
+      const conversationsHistory = await getConversationsHistory({
+        channelId: conversation.channelId,
+        accessToken: args.accessToken,
+      })
 
-  const conversationsHistory = await getConversationsHistory({
-    channelId: args.channelId,
-    accessToken: args.accessToken,
-  })
+      return { conversationsInfo, conversationsHistory }
+    }),
+  )
 
-  return {
-    conversationsInfo: conversationsInfo,
-    conversationsHistory: conversationsHistory,
-  }
+  return results
 }
 
 const getConversationsHistory = async (args: {

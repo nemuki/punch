@@ -3,7 +3,6 @@ import {
   Card,
   Group,
   Stack,
-  Text,
   TextInput,
   Title,
 } from '@mantine/core'
@@ -20,26 +19,45 @@ export const SlackConversationSetting: FC<Props> = (props: Props) => {
 
   return (
     <Stack>
-      <Title order={3} size={'sm'}>
-        Slackチャンネル / スレッド検索
-      </Title>
+      <Group>
+        <Title order={2} size={'h5'}>
+          Slackチャンネル / スレッド設定
+        </Title>
+
+        <Button
+          onClick={() => {
+            form.insertListItem('conversations', {
+              channelId: '',
+              searchMessage: '',
+            })
+          }}
+          w={'fit-content'}
+          size={'xs'}
+        >
+          チャンネル追加
+        </Button>
+      </Group>
       {conversations.map((_, index) => (
         <Card withBorder key={index}>
           <Stack>
             <Group>
-              <Text>チャンネル {index + 1}</Text>
+              <Title order={3} size={'h6'}>
+                チャンネル {index + 1}
+              </Title>
               {conversations.length > 1 && (
                 <Button
                   color={'red'}
                   onClick={() => {
                     props.deleteConversation(index)
                   }}
+                  size="xs"
                 >
                   削除
                 </Button>
               )}
             </Group>
             <TextInput
+              withAsterisk
               label="チャンネルID"
               description="投稿するチャンネルのIDを入力してください"
               key={form.key(`conversations.${index}.channelId`)}
@@ -58,22 +76,9 @@ export const SlackConversationSetting: FC<Props> = (props: Props) => {
           </Stack>
         </Card>
       ))}
-      <Group>
-        <Button
-          onClick={() => {
-            form.insertListItem('conversations', {
-              channelId: '',
-              searchMessage: '',
-            })
-          }}
-          w={'fit-content'}
-        >
-          チャンネル追加
-        </Button>
-        <Button type={'submit'} w={'fit-content'}>
-          検索
-        </Button>
-      </Group>
+      <Button type={'submit'} w={'fit-content'}>
+        保存と検索
+      </Button>
     </Stack>
   )
 }

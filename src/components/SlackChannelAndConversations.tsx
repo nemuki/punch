@@ -1,20 +1,9 @@
-import {
-  Anchor,
-  Box,
-  Card,
-  Code,
-  Skeleton,
-  Stack,
-  Text,
-  Title,
-} from '@mantine/core'
-import { ConversationsInfoResponse } from '@slack/web-api'
-import { MessageElement } from '@slack/web-api/dist/types/response/ConversationsHistoryResponse'
+import { Anchor, Box, Card, Skeleton, Stack, Text, Title } from '@mantine/core'
 import React, { FC } from 'react'
+import { SlackConversations } from '../types'
 
 type Props = {
-  conversationsInfo?: ConversationsInfoResponse
-  conversations?: MessageElement
+  slackConversations: SlackConversations
   isFetching: boolean
 }
 
@@ -30,22 +19,29 @@ type ChannelProps = {
 }
 
 type ConversationsProps = {
-  conversations?: MessageElement
+  threadText?: string
 }
 
-export const SlackChannelAndConversation: FC<Props> = (props: Props) => {
+export const SlackChannelAndConversations: FC<Props> = (props: Props) => {
   return (
     <Skeleton visible={props.isFetching}>
       <Stack>
         <Title order={2} size={'h5'}>
           Slackチャンネル / スレッド
         </Title>
-        <Channel
-          channelName={props.conversationsInfo?.channel?.name}
-          channelId={props.conversationsInfo?.channel?.id}
-          workspaceId={props.conversationsInfo?.channel?.context_team_id}
-        />
-        <Conversations conversations={props.conversations} />
+        {props.slackConversations.map((conversation, index) => (
+          <Stack key={index}>
+            <Title order={3} size={'h6'}>
+              Slackチャンネル {index + 1}
+            </Title>
+            <Channel
+              channelName={conversation.channelName}
+              channelId={conversation.channelId}
+              workspaceId={conversation.workspaceId}
+            />
+            <Conversations threadText={conversation.threadText} />
+          </Stack>
+        ))}
       </Stack>
     </Skeleton>
   )
@@ -56,7 +52,7 @@ const CardTemplate: FC<CardTemplateProps> = (props: CardTemplateProps) => {
     <Box>
       <Card withBorder>
         <Card.Section withBorder inheritPadding py="xs">
-          <Title order={3} size={'h6'}>
+          <Title order={4} size={'h6'}>
             {props.title}
           </Title>
         </Card.Section>
@@ -94,7 +90,7 @@ const Channel: FC<ChannelProps> = (props: ChannelProps) => {
 const Conversations: FC<ConversationsProps> = (props: ConversationsProps) => {
   const title = '投稿するスレッド'
 
-  if (props.conversations === undefined) {
+  if (props.threadText === undefined) {
     return (
       <CardTemplate title={title}>
         <Text>スレッドが見つかりませんでした。</Text>
@@ -105,11 +101,7 @@ const Conversations: FC<ConversationsProps> = (props: ConversationsProps) => {
 
   return (
     <CardTemplate title={title}>
-      <Text>{props.conversations.text}</Text>
-      <details>
-        <summary>メッセージを表示</summary>
-        <Code block>{JSON.stringify(props.conversations, undefined, 2)}</Code>
-      </details>
+      <Text>{props.threadText}</Text>
     </CardTemplate>
   )
 }
