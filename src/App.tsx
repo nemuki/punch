@@ -20,7 +20,7 @@ import {
 import { useAuth } from './hooks/useAuth.tsx'
 import {
   getConversations,
-  postMessage,
+  postMessages,
   updateEmoji,
 } from './infra/repository/slack.ts'
 import {
@@ -57,7 +57,7 @@ function App() {
 
   // form
   const appSettingsForm = useAppSettingsForm({
-    mode: 'controlled',
+    mode: 'uncontrolled',
     initialValues: localStorageAppSettings,
     validate: {
       conversations: {
@@ -83,25 +83,28 @@ function App() {
     if (slackConversations) {
       const appSettingsFormValues = appSettingsForm.getValues()
 
-      return slackConversations.map((conversation) => {
-        const channelId = conversation.conversationsInfo?.channel?.id || ''
-        const searchMessage = appSettingsFormValues.conversations.find(
-          (item) =>
-            item.channelId === conversation.conversationsInfo?.channel?.id,
-        )?.searchMessage
+      return appSettingsFormValues.conversations.map((appConversation) => {
+        const id = appConversation.id
+        const channelId = appConversation.channelId
+        const searchMessage = appConversation.searchMessage
+
+        const rawSlackConversation = slackConversations.find(
+          (conversation) => conversation.id === id,
+        )
 
         const baseResult: SlackConversation = {
+          id: id,
           channelId: channelId,
-          channelName: conversation.conversationsInfo?.channel?.name || '',
+          channelName: rawSlackConversation?.conversationsInfo?.channel?.name,
           workspaceId:
-            conversation.conversationsInfo?.channel?.context_team_id || '',
+            rawSlackConversation?.conversationsInfo?.channel?.context_team_id,
         }
 
         if (!searchMessage) {
           return baseResult
         }
 
-        const threadText = conversation.conversationsHistory?.messages
+        const threadText = rawSlackConversation?.conversationsHistory?.messages
           ?.filter((message) => message.type === 'message')
           .filter((message) => message?.text?.includes(searchMessage))[0]
 
@@ -112,24 +115,15 @@ function App() {
         }
       })
     } else {
-      const empty: SlackConversation = {}
-
-      return localStorageAppSettings.conversations.map(() => empty)
+      return localStorageAppSettings.conversations.map(
+        (conversation): SlackConversation => {
+          return {
+            id: conversation.id,
+          }
+        },
+      )
     }
   }, [slackConversations])
-
-  const getWorkStatus = (attendance: boolean): string =>
-    attendance ? '業務' : 'テレワーク'
-
-  const createPunchInStartMessage = (values: PunchInSettings) => {
-    const baseMessage = getWorkStatus(values.inOffice)
-    return `${baseMessage}開始します\n${values.additionalMessage}`
-  }
-
-  const createPunchInEndMessage = (values: PunchInSettings) => {
-    const baseMessage = getWorkStatus(values.inOffice)
-    return `${baseMessage}終了します\n${values.additionalMessage}`
-  }
 
   const deleteConversation = (index: number) => {
     appSettingsForm.removeListItem('conversations', index)
@@ -146,6 +140,19 @@ function App() {
 
     setSlackConversations(result)
     setLocalStorageAppSettings(values)
+  }
+
+  const getWorkStatus = (attendance: boolean): string =>
+    attendance ? '業務' : 'テレワーク'
+
+  const createPunchInStartMessage = (values: PunchInSettings) => {
+    const baseMessage = getWorkStatus(values.inOffice)
+    return `${baseMessage}開始します\n${values.additionalMessage}`
+  }
+
+  const createPunchInEndMessage = (values: PunchInSettings) => {
+    const baseMessage = getWorkStatus(values.inOffice)
+    return `${baseMessage}終了します\n${values.additionalMessage}`
   }
 
   /**
@@ -186,10 +193,9 @@ function App() {
         }
       }
 
-      postMessage({
-        channelId,
+      postMessages({
+        conversations: filteredSlackConversations,
         message: createPunchInStartMessage(values),
-        threadTs: filteredConversations?.ts,
         accessToken: slackOauthToken.accessToken,
       })
     } else if (values.punchIn === 'end') {
@@ -204,10 +210,9 @@ function App() {
         })
       }
 
-      postMessage({
-        channelId,
+      postMessages({
+        conversations: filteredSlackConversations,
         message: createPunchInEndMessage(values),
-        threadTs: filteredConversations?.ts,
         accessToken: slackOauthToken.accessToken,
       })
     }

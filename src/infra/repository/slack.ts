@@ -4,7 +4,7 @@ import {
   ConversationsInfoResponse,
 } from '@slack/web-api'
 import { Conversations } from '../../types/app-settings.ts'
-import { RawSlackConversations } from '../../types/index.ts'
+import { RawSlackConversations, SlackConversations } from '../../types/index.ts'
 import {
   chatPostMessage,
   fetchConversationsHistory,
@@ -28,7 +28,7 @@ export const getConversations = async (args: {
         accessToken: args.accessToken,
       })
 
-      return { conversationsInfo, conversationsHistory }
+      return { id: conversation.id, conversationsInfo, conversationsHistory }
     }),
   )
 
@@ -79,13 +79,38 @@ const getConversationsInfo = async (args: {
   }
 }
 
-export const postMessage = async (args: {
+export const postMessages = async (args: {
+  conversations: SlackConversations
+  message: string
+  accessToken?: string
+}) => {
+  if (args.accessToken) {
+    args.conversations.forEach((conversation) => {
+      if (!conversation.channelId) {
+        return
+      }
+
+      postMessage({
+        channelId: conversation.channelId,
+        channelName: conversation.channelName,
+        message: args.message,
+        threadTs: conversation.threadTs,
+        accessToken: args.accessToken,
+      })
+    })
+  }
+}
+
+const postMessage = async (args: {
   channelId: string
+  channelName?: string
   message: string
   threadTs?: string
   accessToken?: string
 }) => {
   if (args.accessToken) {
+    const position = 'top-right'
+
     try {
       const response = await chatPostMessage({
         accessToken: args.accessToken,
@@ -97,24 +122,27 @@ export const postMessage = async (args: {
       if (response.ok) {
         console.info(response)
         notifications.show({
-          title: 'メッセージ送信完了',
+          title: `${args.channelName} メッセージ送信完了`,
           message: args.message,
           color: 'teal',
+          position,
         })
       } else {
         console.error(response)
         notifications.show({
-          title: 'メッセージ送信エラー',
+          title: `${args.channelName} メッセージ送信エラー`,
           message: 'Slack メッセージ送信時にエラーが発生しました',
           color: 'red',
+          position,
         })
       }
     } catch (error) {
       console.error(error)
       notifications.show({
-        title: 'メッセージ送信エラー',
+        title: `${args.channelName} メッセージ送信エラー`,
         message: 'Slack メッセージ送信時にエラーが発生しました',
         color: 'red',
+        position,
       })
     }
   }

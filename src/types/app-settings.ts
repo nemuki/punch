@@ -6,6 +6,7 @@ export type AppSettings = {
 export type Conversations = Conversation[]
 
 export type Conversation = {
+  id: string
   channelId: string
   searchMessage: string
 }

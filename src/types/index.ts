@@ -15,6 +15,7 @@ export type {
 export type RawSlackConversations = RawSlackConversation[]
 
 export type RawSlackConversation = {
+  id: string
   conversationsInfo?: ConversationsInfoResponse
   conversationsHistory?: ConversationsHistoryResponse
 }
@@ -22,6 +23,7 @@ export type RawSlackConversation = {
 export type SlackConversations = SlackConversation[]
 
 export type SlackConversation = {
+  id: string
   channelId?: string
   channelName?: string
   workspaceId?: string

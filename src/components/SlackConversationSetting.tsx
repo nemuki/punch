@@ -1,11 +1,5 @@
-import {
-  Button,
-  Card,
-  Group,
-  Stack,
-  TextInput,
-  Title,
-} from '@mantine/core'
+import { Button, Card, Group, Stack, TextInput, Title } from '@mantine/core'
+import { randomId } from '@mantine/hooks'
 import { FC } from 'react'
 import { useAppSettingsFormContext } from '../context/form-context'
 
@@ -23,10 +17,10 @@ export const SlackConversationSetting: FC<Props> = (props: Props) => {
         <Title order={2} size={'h5'}>
           Slackチャンネル / スレッド設定
         </Title>
-
         <Button
           onClick={() => {
             form.insertListItem('conversations', {
+              id: randomId(),
               channelId: '',
               searchMessage: '',
             })
@@ -37,8 +31,8 @@ export const SlackConversationSetting: FC<Props> = (props: Props) => {
           チャンネル追加
         </Button>
       </Group>
-      {conversations.map((_, index) => (
-        <Card withBorder key={index}>
+      {form.getValues().conversations.map((conversation, index) => (
+        <Card withBorder key={conversation.id}>
           <Stack>
             <Group>
               <Title order={3} size={'h6'}>

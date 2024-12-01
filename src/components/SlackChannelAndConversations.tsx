@@ -30,7 +30,7 @@ export const SlackChannelAndConversations: FC<Props> = (props: Props) => {
           Slackチャンネル / スレッド
         </Title>
         {props.slackConversations.map((conversation, index) => (
-          <Stack key={index}>
+          <Stack key={conversation.id}>
             <Title order={3} size={'h6'}>
               Slackチャンネル {index + 1}
             </Title>

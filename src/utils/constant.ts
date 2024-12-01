@@ -1,3 +1,4 @@
+import { randomId } from '@mantine/hooks'
 import { AppSettings } from '../types'
 import { env } from './env.ts'
 
@@ -19,6 +20,7 @@ const appSettingsLocalStorageKey: string = 'punch-app-settings'
 const defaultAppSettings: AppSettings = {
   conversations: [
     {
+      id: randomId(),
       channelId: '',
       searchMessage: '',
     },
