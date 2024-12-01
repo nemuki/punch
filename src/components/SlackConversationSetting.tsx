@@ -11,6 +11,10 @@ export const SlackConversationSetting: FC<Props> = (props: Props) => {
   const form = useAppSettingsFormContext()
   const conversations = form.getValues().conversations
 
+  if (!Array.isArray(conversations)) {
+    return null
+  }
+
   return (
     <Stack>
       <Group>
@@ -31,7 +35,7 @@ export const SlackConversationSetting: FC<Props> = (props: Props) => {
           チャンネル追加
         </Button>
       </Group>
-      {form.getValues().conversations.map((conversation, index) => (
+      {conversations.map((conversation, index) => (
         <Card withBorder key={conversation.id}>
           <Stack>
             <Group>

@@ -85,6 +85,10 @@ function App() {
   });
 
   const filteredSlackConversations = useMemo<SlackConversations>(() => {
+    if (!isLocalStorageValid(localStorageAppSettings)) {
+      return [];
+    }
+
     if (slackConversations) {
       const appSettingsFormValues = appSettingsForm.getValues();
 
@@ -227,7 +231,13 @@ function App() {
    * 初回アクセス時の処理
    */
   useEffect(() => {
+    if (!isLocalStorageValid(localStorageAppSettings)) {
+        setHasLocalStorageError(true);
+        return;
+      }
+    
     (async () => {
+
       if (appSettingsForm.values.conversations[0].channelId) {
         const result = await getConversations({
           conversations: appSettingsForm.values.conversations,
@@ -239,20 +249,16 @@ function App() {
         setIsSettingsOpen();
       }
 
-      if (isLocalStorageValid(localStorageAppSettings)) {
-        setHasLocalStorageError(true);
-      }
-
       setIsConversationsFetching(false);
     })();
   }, []);
 
   // Render
   if (hasLocalStorageError) {
-    <LocalStorageError
+    return (<LocalStorageError
       localStorageAppSettings={localStorageAppSettings}
       removeLocalStorageAppSettings={removeLocalStorageAppSettings}
-    />;
+    />)
   }
 
   if (Object.keys(slackOauthToken).length === 0) {

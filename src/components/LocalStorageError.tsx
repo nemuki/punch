@@ -4,7 +4,6 @@ import { AppSettings } from '../types'
 
 type Props = {
   localStorageAppSettings: AppSettings
-  removeLocalStorageAppSettings: () => void
 }
 
 export const LocalStorageError: FC<Props> = (props: Props) => {
@@ -32,7 +31,7 @@ export const LocalStorageError: FC<Props> = (props: Props) => {
       <Button
         w={'fit-content'}
         onClick={() => {
-          props.removeLocalStorageAppSettings()
+          localStorage.clear()
           window.location.reload()
         }}
       >
