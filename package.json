@@ -6,7 +6,7 @@
   "volta": {
     "node": "20.18.1"
   },
-  "packageManager": "pnpm@9.14.2",
+  "packageManager": "pnpm@9.15.1",
   "scripts": {
     "dev": "vite",
     "preview": "vite preview",
@@ -28,10 +28,10 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
-    "@slack/web-api": "7.7.0",
+    "@slack/web-api": "7.8.0",
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",
-    "@vitejs/plugin-react": "4.3.3",
+    "@vitejs/plugin-react": "4.3.4",
     "postcss": "8.4.49",
     "postcss-preset-mantine": "1.17.0",
     "postcss-simple-vars": "7.0.1",
