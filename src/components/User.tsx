@@ -10,13 +10,13 @@ export const User = () => {
 
   return (
     <>
-      <Avatar radius="sm" size={'sm'} src={userProfile.profile?.image_192} />
+      <Avatar radius="sm" size="sm" src={userProfile.profile?.image_192} />
       <Text>{userProfile.profile?.real_name}</Text>
       <Button
         onClick={() => {
           handleLogout()
         }}
-        w={'fit-content'}
+        w="fit-content"
         size="xs"
       >
         ログアウト

@@ -28,25 +28,25 @@ export const PunchInForm: FC<Props> = (props: Props) => {
 
   return (
     <form
-      action={'/punch'}
+      action="/punch"
       onSubmit={props.punchInForm.onSubmit(props.handleSubmitPunchInForm)}
     >
       <Stack>
         <Textarea
           label="追加メッセージ"
-          description={'追加のメッセージを入力できます'}
+          description="追加のメッセージを入力できます"
           key={props.punchInForm.key('additionalMessage')}
           {...props.punchInForm.getInputProps('additionalMessage')}
         />
         <Checkbox
-          description={'デフォルトはテレワーク'}
-          label={'出社時はチェック'}
+          description="デフォルトはテレワーク"
+          label="出社時はチェック"
           key={props.punchInForm.key('inOffice')}
           {...props.punchInForm.getInputProps('inOffice')}
         />
         <Checkbox
-          description={'出勤時は9時間後、退勤時は24時に削除されます'}
-          label={'ステータス絵文字を変更する'}
+          description="出勤時は9時間後、退勤時は24時に削除されます"
+          label="ステータス絵文字を変更する"
           key={props.punchInForm.key('changeStatusEmoji')}
           {...props.punchInForm.getInputProps('changeStatusEmoji')}
         />
@@ -55,7 +55,7 @@ export const PunchInForm: FC<Props> = (props: Props) => {
         </Center>
         <Group grow>
           <Button
-            type={'submit'}
+            type="submit"
             onClick={() =>
               props.punchInForm.setValues((prev) => ({
                 ...prev,
@@ -66,8 +66,8 @@ export const PunchInForm: FC<Props> = (props: Props) => {
             出勤
           </Button>
           <Button
-            color={'pink'}
-            type={'submit'}
+            color="pink"
+            type="submit"
             onClick={() => {
               props.punchInForm.setValues((prev) => ({
                 ...prev,
@@ -78,7 +78,7 @@ export const PunchInForm: FC<Props> = (props: Props) => {
             退勤
           </Button>
         </Group>
-        <Title order={2} size={'sm'}>
+        <Title order={2} size="sm">
           送信メッセージプレビュー
         </Title>
         <Card withBorder>
@@ -87,7 +87,7 @@ export const PunchInForm: FC<Props> = (props: Props) => {
               <Group>
                 <Avatar
                   radius="sm"
-                  size={'sm'}
+                  size="sm"
                   src={userProfile.profile?.image_192}
                 />
                 <Text fw={700}>{userProfile.profile?.real_name}</Text>

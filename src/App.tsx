@@ -266,10 +266,7 @@ function App() {
 
   if (Object.keys(slackOauthToken).length === 0) {
     return (
-      <Button
-        component={'a'}
-        href={applicationConstants.slackOauthAuthorizeUrl}
-      >
+      <Button component="a" href={applicationConstants.slackOauthAuthorizeUrl}>
         Login with Slack
       </Button>
     )

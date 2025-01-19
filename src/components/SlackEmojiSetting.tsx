@@ -14,15 +14,15 @@ import { useAppSettingsFormContext } from '../context/form-context'
 export const SlackEmojiSetting: FC = () => {
   return (
     <Stack>
-      <Title order={3} size={'sm'}>
+      <Title order={3} size="sm">
         Slack絵文字設定
       </Title>
       <Card withBorder>
         <Stack>
-          <StatusEmojiInput label={'🏢 出社'} emojiKey={'office'} />
-          <StatusEmojiInput label={'🏠 テレワーク'} emojiKey={'telework'} />
-          <StatusEmojiInput label={'🚪 退勤'} emojiKey={'leave'} />
-          <Button type={'submit'} w={'fit-content'}>
+          <StatusEmojiInput label="🏢 出社" emojiKey="office" />
+          <StatusEmojiInput label="🏠 テレワーク" emojiKey="telework" />
+          <StatusEmojiInput label="🚪 退勤" emojiKey="leave" />
+          <Button type="submit" w="fit-content">
             保存
           </Button>
         </Stack>

@@ -26,12 +26,12 @@ export const SlackChannelAndConversations: FC<Props> = (props: Props) => {
   return (
     <Skeleton visible={props.isFetching}>
       <Stack>
-        <Title order={2} size={'h5'}>
+        <Title order={2} size="h5">
           Slackチャンネル / スレッド
         </Title>
         {props.slackConversations.map((conversation, index) => (
           <Stack key={conversation.id}>
-            <Title order={3} size={'h6'}>
+            <Title order={3} size="h6">
               Slackチャンネル {index + 1}
             </Title>
             <Channel
@@ -52,7 +52,7 @@ const CardTemplate: FC<CardTemplateProps> = (props: CardTemplateProps) => {
     <Box>
       <Card withBorder>
         <Card.Section withBorder inheritPadding py="xs">
-          <Title order={4} size={'h6'}>
+          <Title order={4} size="h6">
             {props.title}
           </Title>
         </Card.Section>
@@ -71,7 +71,7 @@ const Channel: FC<ChannelProps> = (props: ChannelProps) => {
   if (props.channelName === undefined) {
     return (
       <CardTemplate title={title}>
-        <Text fw={700} c={'red'}>
+        <Text fw={700} c="red">
           チャンネルを検索してください
         </Text>
       </CardTemplate>
@@ -80,7 +80,7 @@ const Channel: FC<ChannelProps> = (props: ChannelProps) => {
 
   return (
     <CardTemplate title={title}>
-      <Anchor href={url} target={'_blank'} fw={700}>
+      <Anchor href={url} target="_blank" fw={700}>
         # {props.channelName}
       </Anchor>
     </CardTemplate>

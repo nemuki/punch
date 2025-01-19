@@ -11,7 +11,7 @@ export const AuthError: FC<Props> = (props: Props) => {
 
   return (
     <Stack>
-      <Text c={'red'} fw={500}>
+      <Text c="red" fw={500}>
         {props.message}
       </Text>
       <Group>
@@ -23,7 +23,7 @@ export const AuthError: FC<Props> = (props: Props) => {
           リトライ（だいたいこっちで治る）
         </Button>
         <Button
-          color={'red'}
+          color="red"
           onClick={() => {
             handleRemoveLocalStorageSlackOauthToken()
           }}
