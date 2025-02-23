@@ -9,7 +9,7 @@ export const LocalStorageError: FC = () => {
         <Text>お手数ですが、初期化と再設定をお願いします 🙏</Text>
       </Box>
       <Button
-        w={'fit-content'}
+        w="fit-content"
         onClick={() => {
           localStorage.clear()
           window.location.reload()

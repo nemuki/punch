@@ -18,7 +18,7 @@ export const SlackConversationSetting: FC<Props> = (props: Props) => {
   return (
     <Stack>
       <Group>
-        <Title order={2} size={'h5'}>
+        <Title order={2} size="h5">
           Slackチャンネル / スレッド設定
         </Title>
         <Button
@@ -29,8 +29,8 @@ export const SlackConversationSetting: FC<Props> = (props: Props) => {
               searchMessage: '',
             })
           }}
-          w={'fit-content'}
-          size={'xs'}
+          w="fit-content"
+          size="xs"
         >
           チャンネル追加
         </Button>
@@ -39,12 +39,12 @@ export const SlackConversationSetting: FC<Props> = (props: Props) => {
         <Card withBorder key={conversation.id}>
           <Stack>
             <Group>
-              <Title order={3} size={'h6'}>
+              <Title order={3} size="h6">
                 チャンネル {index + 1}
               </Title>
               {conversations.length > 1 && (
                 <Button
-                  color={'red'}
+                  color="red"
                   onClick={() => {
                     props.deleteConversation(index)
                   }}
@@ -74,7 +74,7 @@ export const SlackConversationSetting: FC<Props> = (props: Props) => {
           </Stack>
         </Card>
       ))}
-      <Button type={'submit'} w={'fit-content'}>
+      <Button type="submit" w="fit-content">
         保存と検索
       </Button>
     </Stack>
