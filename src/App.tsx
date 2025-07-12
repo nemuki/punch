@@ -113,6 +113,15 @@ function App() {
     }
   }, [slackConversations, localStorageAppSettings])
 
+  const handleRestoreSavedSettings = () => {
+    if (localStorageAppSettings.savedPunchInSettings) {
+      punchInForm.setValues({
+        ...localStorageAppSettings.savedPunchInSettings,
+        punchIn: undefined, // Reset punchIn to avoid accidental submission
+      })
+    }
+  }
+
   const handleSubmitAppSettingsForm = async (values: AppSettings) => {
     const result = await fetchConversations(values.conversations)
     if (result) {
@@ -122,16 +131,20 @@ function App() {
   }
 
   const getWorkStatus = (attendance: boolean): string =>
-    attendance ? '業務' : 'テレワーク'
+    attendance
+      ? localStorageAppSettings.messages.workTypes.office
+      : localStorageAppSettings.messages.workTypes.telework
 
   const createPunchInStartMessage = (values: PunchInSettings) => {
     const baseMessage = getWorkStatus(values.inOffice)
-    return `${baseMessage}開始します\n${values.additionalMessage}`
+    const action = localStorageAppSettings.messages.actions.start
+    return `${baseMessage}${action}\n${values.additionalMessage}`
   }
 
   const createPunchInEndMessage = (values: PunchInSettings) => {
     const baseMessage = getWorkStatus(values.inOffice)
-    return `${baseMessage}終了します\n${values.additionalMessage}`
+    const action = localStorageAppSettings.messages.actions.end
+    return `${baseMessage}${action}\n${values.additionalMessage}`
   }
 
   /**
@@ -152,9 +165,19 @@ function App() {
     const midnightUnixTime = Math.floor(midnight.getTime() / 1000)
 
     if (values.punchIn === 'start') {
-      // 出社時の処理
+      // 出勤時の処理 - 設定を保存
+      const punchInSettings = {
+        changeStatusEmoji: values.changeStatusEmoji,
+        inOffice: values.inOffice,
+        additionalMessage: values.additionalMessage,
+      }
+      setLocalStorageAppSettings((prev) => ({
+        ...prev,
+        savedPunchInSettings: punchInSettings,
+      }))
+
+      // ステータス絵文字を変更する
       if (values.changeStatusEmoji) {
-        // ステータス絵文字を変更する
         if (values.inOffice) {
           updateEmoji({
             statusEmoji: localStorageAppSettings.status.emoji.office,
@@ -234,6 +257,9 @@ function App() {
           punchInForm={punchInForm}
           handleSubmitPunchInForm={handleSubmitPunchInForm}
           getWorkStatus={getWorkStatus}
+          savedPunchInSettings={localStorageAppSettings.savedPunchInSettings}
+          onRestoreSavedSettings={handleRestoreSavedSettings}
+          messageTemplates={localStorageAppSettings.messages}
         />
       </Grid.Col>
     </Grid>

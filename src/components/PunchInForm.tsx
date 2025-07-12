@@ -21,6 +21,14 @@ type Props = {
   punchInForm: UseFormReturnType<PunchInSettings>
   handleSubmitPunchInForm: (values: PunchInSettings) => void
   getWorkStatus: (attendance: boolean) => string
+  savedPunchInSettings?: PunchInSettings
+  onRestoreSavedSettings: () => void
+  messageTemplates: {
+    actions: {
+      start: string
+      end: string
+    }
+  }
 }
 
 export const PunchInForm: FC<Props> = (props: Props) => {
@@ -50,6 +58,15 @@ export const PunchInForm: FC<Props> = (props: Props) => {
           key={props.punchInForm.key('changeStatusEmoji')}
           {...props.punchInForm.getInputProps('changeStatusEmoji')}
         />
+        {props.savedPunchInSettings && (
+          <Button
+            variant="light"
+            size="sm"
+            onClick={props.onRestoreSavedSettings}
+          >
+            出勤時の設定を復元
+          </Button>
+        )}
         <Center>
           <Clock />
         </Center>
@@ -96,7 +113,11 @@ export const PunchInForm: FC<Props> = (props: Props) => {
             <Box>
               <Text>
                 {props.getWorkStatus(props.punchInForm.values.inOffice)}
-                開始 / 終了します
+                {props.punchInForm.values.punchIn === 'start'
+                  ? props.messageTemplates.actions.start
+                  : props.punchInForm.values.punchIn === 'end'
+                    ? props.messageTemplates.actions.end
+                    : '開始 / 終了します'}
               </Text>
               <Text inherit style={{ whiteSpace: 'pre-wrap' }}>
                 {props.punchInForm.values.additionalMessage}

@@ -6,7 +6,11 @@ import {
   useAppSettingsForm,
 } from '../context/form-context.ts'
 import { AppSettings, RawSlackConversations } from '../types'
-import { SlackConversationSetting, SlackEmojiSetting } from './index'
+import {
+  SlackConversationSetting,
+  SlackEmojiSetting,
+  SlackMessageSetting,
+} from './index'
 
 interface SettingsFormProps {
   localStorageAppSettings: AppSettings
@@ -65,6 +69,7 @@ export const SettingsForm = ({
                 deleteConversation={deleteConversation}
               />
               <SlackEmojiSetting />
+              <SlackMessageSetting />
             </Stack>
           </form>
         </AppSettingsFormProvider>

@@ -30,5 +30,24 @@ export const isLocalStorageValid = (value: any): value is AppSettings => {
     return false
   }
 
+  // Validate message templates (with fallback for backward compatibility)
+  if (value.messages) {
+    if (typeof value.messages.workTypes?.office !== 'string') {
+      return false
+    }
+
+    if (typeof value.messages.workTypes?.telework !== 'string') {
+      return false
+    }
+
+    if (typeof value.messages.actions?.start !== 'string') {
+      return false
+    }
+
+    if (typeof value.messages.actions?.end !== 'string') {
+      return false
+    }
+  }
+
   return true
 }
