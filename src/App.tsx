@@ -10,7 +10,7 @@ import {
 } from './components'
 import { usePunchInSettingForm } from './context/form-context.ts'
 import { useAuth } from './hooks/useAuth.tsx'
-import { useConversations } from './hooks/useConversations.tsx'
+import { useConversationsSWR } from './hooks/useConversationsSWR.tsx'
 import { postMessages, updateEmoji } from './infra/repository/slack.ts'
 import {
   AppSettings,
@@ -41,7 +41,7 @@ function App() {
     isConversationsFetching,
     shouldOpenSettings,
     fetchConversations,
-  } = useConversations({
+  } = useConversationsSWR({
     appSettings: localStorageAppSettings,
     accessToken: slackOauthToken.accessToken,
     authIsLoading,
