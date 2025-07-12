@@ -41,7 +41,7 @@ importers:
         version: 18.3.1
       '@vitejs/plugin-react':
         specifier: 4.3.3
-        version: 4.3.3(vite@6.1.1(@types/node@24.0.13)(sugarss@4.0.1(postcss@8.4.49)))
+        version: 4.3.3(vite@6.1.6(@types/node@24.0.13)(sugarss@4.0.1(postcss@8.4.49)))
       postcss:
         specifier: 8.4.49
         version: 8.4.49
@@ -55,8 +55,8 @@ importers:
         specifier: 5.7.2
         version: 5.7.2
       vite:
-        specifier: 6.1.1
-        version: 6.1.1(@types/node@24.0.13)(sugarss@4.0.1(postcss@8.4.49))
+        specifier: 6.1.6
+        version: 6.1.6(@types/node@24.0.13)(sugarss@4.0.1(postcss@8.4.49))
 
 packages:
 
@@ -1077,8 +1077,8 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
-  vite@6.1.1:
-    resolution: {integrity: sha512-4GgM54XrwRfrOp297aIYspIti66k56v16ZnqHvrIM7mG+HjDlAwS7p+Srr7J6fGvEdOJ5JcQ/D9T7HhtdXDTzA==}
+  vite@6.1.6:
+    resolution: {integrity: sha512-u+jokLMwHVFUoUkfL+m/1hzucejL2639g9QXcrRdtN3WPHfW7imI83V96Oh1R0xVZqDjvcgp+7S8bSQpdVlmPA==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
     peerDependencies:
@@ -1562,14 +1562,14 @@ snapshots:
 
   '@types/retry@0.12.0': {}
 
-  '@vitejs/plugin-react@4.3.3(vite@6.1.1(@types/node@24.0.13)(sugarss@4.0.1(postcss@8.4.49)))':
+  '@vitejs/plugin-react@4.3.3(vite@6.1.6(@types/node@24.0.13)(sugarss@4.0.1(postcss@8.4.49)))':
     dependencies:
       '@babel/core': 7.28.0
       '@babel/plugin-transform-react-jsx-self': 7.27.1(@babel/core@7.28.0)
       '@babel/plugin-transform-react-jsx-source': 7.27.1(@babel/core@7.28.0)
       '@types/babel__core': 7.20.5
       react-refresh: 0.14.2
-      vite: 6.1.1(@types/node@24.0.13)(sugarss@4.0.1(postcss@8.4.49))
+      vite: 6.1.6(@types/node@24.0.13)(sugarss@4.0.1(postcss@8.4.49))
     transitivePeerDependencies:
       - supports-color
 
@@ -2048,7 +2048,7 @@ snapshots:
 
   util-deprecate@1.0.2: {}
 
-  vite@6.1.1(@types/node@24.0.13)(sugarss@4.0.1(postcss@8.4.49)):
+  vite@6.1.6(@types/node@24.0.13)(sugarss@4.0.1(postcss@8.4.49)):
     dependencies:
       esbuild: 0.24.2
       postcss: 8.5.6
