@@ -1,52 +1,30 @@
-import { Button, Collapse, Grid, Stack } from '@mantine/core'
-import {
-  readLocalStorageValue,
-  useDisclosure,
-  useLocalStorage,
-} from '@mantine/hooks'
-import { useEffect, useMemo, useState } from 'react'
+import { Button, Grid, Stack } from '@mantine/core'
+import { readLocalStorageValue, useLocalStorage } from '@mantine/hooks'
+import { useMemo, useState } from 'react'
 import {
   AuthError,
   LocalStorageError,
   PunchInForm,
+  SettingsForm,
   SlackChannelAndConversations,
-  SlackConversationSetting,
-  SlackEmojiSetting,
 } from './components'
-import {
-  AppSettingsFormProvider,
-  useAppSettingsForm,
-  usePunchInSettingForm,
-} from './context/form-context.ts'
+import { usePunchInSettingForm } from './context/form-context.ts'
 import { useAuth } from './hooks/useAuth.tsx'
-import {
-  getConversations,
-  postMessages,
-  updateEmoji,
-} from './infra/repository/slack.ts'
+import { useConversations } from './hooks/useConversations.tsx'
+import { postMessages, updateEmoji } from './infra/repository/slack.ts'
 import {
   AppSettings,
   PunchInSettings,
-  RawSlackConversations,
   SlackConversation,
   SlackConversations,
 } from './types'
 import { applicationConstants, isLocalStorageValid } from './utils'
 
 function App() {
-  const { authErrorMessage, slackOauthToken } = useAuth()
+  const { authErrorMessage, authIsLoading, slackOauthToken } = useAuth()
 
   // State
   const [hasLocalStorageError, setHasLocalStorageError] = useState(false)
-  const [isConversationsFetching, setIsConversationsFetching] = useState(true)
-  const [slackConversations, setSlackConversations] = useState<
-    RawSlackConversations | undefined
-  >(undefined)
-
-  const [
-    isSettingsOpen,
-    { toggle: toggleSettingsOpen, open: setIsSettingsOpen },
-  ] = useDisclosure(false)
 
   const [localStorageAppSettings, setLocalStorageAppSettings] =
     useLocalStorage<AppSettings>({
@@ -57,20 +35,26 @@ function App() {
       }),
     })
 
-  // form
-  const appSettingsForm = useAppSettingsForm({
-    mode: 'uncontrolled',
-    initialValues: localStorageAppSettings,
-    validate: {
-      conversations: {
-        channelId: (value) => {
-          if (!value) {
-            return 'チャンネルIDは必須です'
-          }
-        },
-      },
-    },
+  // Conversation management
+  const {
+    slackConversations,
+    isConversationsFetching,
+    shouldOpenSettings,
+    fetchConversations,
+  } = useConversations({
+    appSettings: localStorageAppSettings,
+    accessToken: slackOauthToken.accessToken,
+    authIsLoading,
   })
+
+  // Check for localStorage errors
+  if (!isLocalStorageValid(localStorageAppSettings)) {
+    if (!hasLocalStorageError) {
+      setHasLocalStorageError(true)
+    }
+  }
+
+  // form
   const punchInForm = usePunchInSettingForm({
     mode: 'controlled',
     initialValues: {
@@ -87,9 +71,7 @@ function App() {
     }
 
     if (slackConversations) {
-      const appSettingsFormValues = appSettingsForm.getValues()
-
-      return appSettingsFormValues.conversations.map((appConversation) => {
+      return localStorageAppSettings.conversations.map((appConversation) => {
         const id = appConversation.id
         const channelId = appConversation.channelId
         const searchMessage = appConversation.searchMessage
@@ -129,28 +111,14 @@ function App() {
         },
       )
     }
-  }, [
-    slackConversations,
-    localStorageAppSettings,
-    appSettingsForm.getValues,
-    localStorageAppSettings.conversations.map,
-  ])
+  }, [slackConversations, localStorageAppSettings])
 
-  const deleteConversation = (index: number) => {
-    appSettingsForm.removeListItem('conversations', index)
-    handleSubmitAppSettingsForm(appSettingsForm.getValues())
-  }
-
-  const handleSubmitAppSettingsForm = async (
-    values: typeof appSettingsForm.values,
-  ) => {
-    const result = await getConversations({
-      conversations: values.conversations,
-      accessToken: slackOauthToken.accessToken,
-    })
-
-    setSlackConversations(result)
-    setLocalStorageAppSettings(values)
+  const handleSubmitAppSettingsForm = async (values: AppSettings) => {
+    const result = await fetchConversations(values.conversations)
+    if (result) {
+      setLocalStorageAppSettings(values)
+    }
+    return result
   }
 
   const getWorkStatus = (attendance: boolean): string =>
@@ -229,36 +197,6 @@ function App() {
     }
   }
 
-  /**
-   * 初回アクセス時の処理
-   */
-  useEffect(() => {
-    if (!isLocalStorageValid(localStorageAppSettings)) {
-      setHasLocalStorageError(true)
-      return
-    }
-    ;(async () => {
-      if (appSettingsForm.values.conversations[0].channelId) {
-        const result = await getConversations({
-          conversations: appSettingsForm.values.conversations,
-          accessToken: slackOauthToken.accessToken,
-        })
-
-        setSlackConversations(result)
-      } else {
-        setIsSettingsOpen()
-      }
-
-      setIsConversationsFetching(false)
-    })()
-  }, [
-    localStorageAppSettings,
-    appSettingsForm.values.conversations,
-    slackOauthToken.accessToken,
-    appSettingsForm.values.conversations[0].channelId,
-    setIsSettingsOpen,
-  ])
-
   // Render
   if (hasLocalStorageError) {
     return <LocalStorageError />
@@ -284,21 +222,11 @@ function App() {
             slackConversations={filteredSlackConversations}
             isFetching={isConversationsFetching}
           />
-          <Button onClick={toggleSettingsOpen}>Slack設定を開く</Button>
-          <Collapse in={isSettingsOpen}>
-            <AppSettingsFormProvider form={appSettingsForm}>
-              <form
-                onSubmit={appSettingsForm.onSubmit(handleSubmitAppSettingsForm)}
-              >
-                <Stack>
-                  <SlackConversationSetting
-                    deleteConversation={deleteConversation}
-                  />
-                  <SlackEmojiSetting />
-                </Stack>
-              </form>
-            </AppSettingsFormProvider>
-          </Collapse>
+          <SettingsForm
+            localStorageAppSettings={localStorageAppSettings}
+            onSubmit={handleSubmitAppSettingsForm}
+            shouldOpenSettings={shouldOpenSettings}
+          />
         </Stack>
       </Grid.Col>
       <Grid.Col span={6}>
