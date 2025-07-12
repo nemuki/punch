@@ -6,7 +6,7 @@ import {
   fetchUserProfile,
   revokeToken,
 } from '../infra/api/slack.ts'
-import { applicationConstants } from '../utils'
+import { applicationConstants, env } from '../utils'
 
 type SlackOauthToken = {
   accessToken?: string
@@ -183,7 +183,7 @@ export const AuthProvider: FC<AuthProviderProps> = (
         expiresAt: currentTimestamp + response.authed_user.expires_in,
       })
 
-      window.location.href = window.location.origin + import.meta.env.BASE_URL
+      window.location.href = env.SLACK_REDIRECT_URI
     } catch (error) {
       handleSetError(errorMessage, error)
     }
