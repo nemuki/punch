@@ -183,7 +183,7 @@ export const AuthProvider: FC<AuthProviderProps> = (
         expiresAt: currentTimestamp + response.authed_user.expires_in,
       })
 
-      window.location.href = window.location.origin
+      window.location.href = window.location.origin + import.meta.env.BASE_URL
     } catch (error) {
       handleSetError(errorMessage, error)
     }
