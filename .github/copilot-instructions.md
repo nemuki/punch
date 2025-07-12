@@ -60,7 +60,7 @@ Mantine Form Contexts - App settings and punch-in forms via createFormContext
 # Required environment variables (create .env from .env.example)
 VITE_SLACK_CLIENT_ID=your_slack_client_id
 VITE_SLACK_CLIENT_SECRET=your_slack_client_secret
-VITE_SLACK_REDIRECT_URI=http://localhost:5173
+VITE_SLACK_REDIRECT_URI=VITE_SLACK_REDIRECT_URI=http://localhost:5173/punch/
 VITE_USAGE_URL=optional_usage_url
 VITE_MAINTAINER_URL=optional_maintainer_url
 ```
