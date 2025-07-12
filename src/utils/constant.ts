@@ -43,8 +43,14 @@ const defaultAppSettings: AppSettings = {
       telework: 'テレワーク',
     },
     actions: {
-      start: '開始します',
-      end: '終了します',
+      office: {
+        start: '開始します',
+        end: '終了します',
+      },
+      telework: {
+        start: '開始します',
+        end: '終了します',
+      },
     },
   },
 }

@@ -58,9 +58,12 @@ function App() {
   const punchInForm = usePunchInSettingForm({
     mode: 'controlled',
     initialValues: {
-      changeStatusEmoji: false,
-      inOffice: false,
-      additionalMessage: '',
+      changeStatusEmoji:
+        localStorageAppSettings.savedPunchInSettings?.changeStatusEmoji ??
+        false,
+      inOffice: localStorageAppSettings.savedPunchInSettings?.inOffice ?? false,
+      additionalMessage:
+        localStorageAppSettings.savedPunchInSettings?.additionalMessage ?? '',
       punchIn: undefined,
     },
   })
@@ -113,15 +116,6 @@ function App() {
     }
   }, [slackConversations, localStorageAppSettings])
 
-  const handleRestoreSavedSettings = () => {
-    if (localStorageAppSettings.savedPunchInSettings) {
-      punchInForm.setValues({
-        ...localStorageAppSettings.savedPunchInSettings,
-        punchIn: undefined, // Reset punchIn to avoid accidental submission
-      })
-    }
-  }
-
   const handleSubmitAppSettingsForm = async (values: AppSettings) => {
     const result = await fetchConversations(values.conversations)
     if (result) {
@@ -137,13 +131,17 @@ function App() {
 
   const createPunchInStartMessage = (values: PunchInSettings) => {
     const baseMessage = getWorkStatus(values.inOffice)
-    const action = localStorageAppSettings.messages.actions.start
+    const action = values.inOffice
+      ? localStorageAppSettings.messages.actions.office.start
+      : localStorageAppSettings.messages.actions.telework.start
     return `${baseMessage}${action}\n${values.additionalMessage}`
   }
 
   const createPunchInEndMessage = (values: PunchInSettings) => {
     const baseMessage = getWorkStatus(values.inOffice)
-    const action = localStorageAppSettings.messages.actions.end
+    const action = values.inOffice
+      ? localStorageAppSettings.messages.actions.office.end
+      : localStorageAppSettings.messages.actions.telework.end
     return `${baseMessage}${action}\n${values.additionalMessage}`
   }
 
@@ -257,8 +255,6 @@ function App() {
           punchInForm={punchInForm}
           handleSubmitPunchInForm={handleSubmitPunchInForm}
           getWorkStatus={getWorkStatus}
-          savedPunchInSettings={localStorageAppSettings.savedPunchInSettings}
-          onRestoreSavedSettings={handleRestoreSavedSettings}
           messageTemplates={localStorageAppSettings.messages}
         />
       </Grid.Col>

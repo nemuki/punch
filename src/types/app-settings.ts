@@ -42,6 +42,12 @@ export type WorkTypes = {
 }
 
 export type Actions = {
-  start: string
-  end: string
+  office: {
+    start: string
+    end: string
+  }
+  telework: {
+    start: string
+    end: string
+  }
 }
