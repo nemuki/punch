@@ -129,12 +129,7 @@ function App() {
         },
       )
     }
-  }, [
-    slackConversations,
-    localStorageAppSettings,
-    appSettingsForm.getValues,
-    localStorageAppSettings.conversations.map,
-  ])
+  }, [slackConversations, localStorageAppSettings, appSettingsForm.getValues])
 
   const deleteConversation = (index: number) => {
     appSettingsForm.removeListItem('conversations', index)
@@ -255,8 +250,7 @@ function App() {
     localStorageAppSettings,
     appSettingsForm.values.conversations,
     slackOauthToken.accessToken,
-    appSettingsForm.values.conversations[0].channelId,
-    setIsSettingsOpen,
+    setIsSettingsOpen, // stable function from useDisclosure
   ])
 
   // Render
