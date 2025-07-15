@@ -99,16 +99,13 @@ export const PunchInForm: FC<Props> = (props: Props) => {
             )}
             <Box>
               <Text inherit style={{ whiteSpace: 'pre-wrap' }}>
-                {props.messageTemplates.office.start}
-              </Text>
-              <Text inherit style={{ whiteSpace: 'pre-wrap' }}>
-                {props.messageTemplates.telework.start}
-              </Text>
-              <Text inherit style={{ whiteSpace: 'pre-wrap' }}>
-                {props.messageTemplates.office.end}
-              </Text>
-              <Text inherit style={{ whiteSpace: 'pre-wrap' }}>
-                {props.messageTemplates.telework.end}
+                {props.punchInForm.values.inOffice
+                  ? props.messageTemplates.office.start
+                  : props.messageTemplates.telework.start}
+                /
+                {props.punchInForm.values.inOffice
+                  ? props.messageTemplates.office.end
+                  : props.messageTemplates.telework.end}
               </Text>
 
               <Text inherit style={{ whiteSpace: 'pre-wrap' }}>
