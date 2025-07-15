@@ -35,14 +35,14 @@ export const SlackMessageSetting: FC = () => {
               <TextInput
                 label="出勤"
                 placeholder="業務開始します"
-                key={form.key('messages.actions.office.start')}
-                {...form.getInputProps('messages.actions.office.start')}
+                key={form.key('messages.office.start')}
+                {...form.getInputProps('messages.office.start')}
               />
               <TextInput
                 label="退勤"
                 placeholder="業務終了します"
-                key={form.key('messages.actions.office.end')}
-                {...form.getInputProps('messages.actions.office.end')}
+                key={form.key('messages.office.end')}
+                {...form.getInputProps('messages.office.end')}
               />
             </Group>
           </Box>
@@ -53,14 +53,14 @@ export const SlackMessageSetting: FC = () => {
               <TextInput
                 label="出勤"
                 placeholder="テレワーク開始します"
-                key={form.key('messages.actions.telework.start')}
-                {...form.getInputProps('messages.actions.telework.start')}
+                key={form.key('messages.telework.start')}
+                {...form.getInputProps('messages.telework.start')}
               />
               <TextInput
                 label="退勤"
                 placeholder="テレワーク終了します"
-                key={form.key('messages.actions.telework.end')}
-                {...form.getInputProps('messages.actions.telework.end')}
+                key={form.key('messages.telework.end')}
+                {...form.getInputProps('messages.telework.end')}
               />
             </Group>
           </Box>
