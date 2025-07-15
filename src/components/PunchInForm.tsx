@@ -14,25 +14,13 @@ import {
 import { UseFormReturnType } from '@mantine/form'
 import { FC } from 'react'
 import { useAuth } from '../hooks/useAuth.tsx'
-import { PunchInSettings } from '../types'
+import { MessageTemplates, PunchInSettings } from '../types'
 import { Clock } from './Clock.tsx'
 
 type Props = {
   punchInForm: UseFormReturnType<PunchInSettings>
   handleSubmitPunchInForm: (values: PunchInSettings) => void
-  getWorkStatus: (attendance: boolean) => string
-  messageTemplates: {
-    actions: {
-      office: {
-        start: string
-        end: string
-      }
-      telework: {
-        start: string
-        end: string
-      }
-    }
-  }
+  messageTemplates: MessageTemplates
 }
 
 export const PunchInForm: FC<Props> = (props: Props) => {
@@ -110,18 +98,19 @@ export const PunchInForm: FC<Props> = (props: Props) => {
               </Group>
             )}
             <Box>
-              <Text>
-                {props.getWorkStatus(props.punchInForm.values.inOffice)}
-                {props.punchInForm.values.punchIn === 'start'
-                  ? props.punchInForm.values.inOffice
-                    ? props.messageTemplates.actions.office.start
-                    : props.messageTemplates.actions.telework.start
-                  : props.punchInForm.values.punchIn === 'end'
-                    ? props.punchInForm.values.inOffice
-                      ? props.messageTemplates.actions.office.end
-                      : props.messageTemplates.actions.telework.end
-                    : '開始 / 終了します'}
+              <Text inherit style={{ whiteSpace: 'pre-wrap' }}>
+                {props.messageTemplates.office.start}
               </Text>
+              <Text inherit style={{ whiteSpace: 'pre-wrap' }}>
+                {props.messageTemplates.telework.start}
+              </Text>
+              <Text inherit style={{ whiteSpace: 'pre-wrap' }}>
+                {props.messageTemplates.office.end}
+              </Text>
+              <Text inherit style={{ whiteSpace: 'pre-wrap' }}>
+                {props.messageTemplates.telework.end}
+              </Text>
+
               <Text inherit style={{ whiteSpace: 'pre-wrap' }}>
                 {props.punchInForm.values.additionalMessage}
               </Text>

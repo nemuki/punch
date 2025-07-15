@@ -38,19 +38,13 @@ const defaultAppSettings: AppSettings = {
     },
   },
   messages: {
-    workTypes: {
-      office: '業務',
-      telework: 'テレワーク',
+    office: {
+      start: '業務開始します',
+      end: '業務終了します',
     },
-    actions: {
-      office: {
-        start: '開始します',
-        end: '終了します',
-      },
-      telework: {
-        start: '開始します',
-        end: '終了します',
-      },
+    telework: {
+      start: 'テレワーク開始します',
+      end: 'テレワーク終了します',
     },
   },
 }

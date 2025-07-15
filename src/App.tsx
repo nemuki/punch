@@ -124,25 +124,18 @@ function App() {
     return result
   }
 
-  const getWorkStatus = (attendance: boolean): string =>
-    attendance
-      ? localStorageAppSettings.messages.workTypes.office
-      : localStorageAppSettings.messages.workTypes.telework
-
   const createPunchInStartMessage = (values: PunchInSettings) => {
-    const baseMessage = getWorkStatus(values.inOffice)
-    const action = values.inOffice
-      ? localStorageAppSettings.messages.actions.office.start
-      : localStorageAppSettings.messages.actions.telework.start
-    return `${baseMessage}${action}\n${values.additionalMessage}`
+    const baseMessage = values.inOffice
+      ? localStorageAppSettings.messages.office.start
+      : localStorageAppSettings.messages.telework.start
+    return `${baseMessage}\n${values.additionalMessage}`
   }
 
   const createPunchInEndMessage = (values: PunchInSettings) => {
-    const baseMessage = getWorkStatus(values.inOffice)
-    const action = values.inOffice
-      ? localStorageAppSettings.messages.actions.office.end
-      : localStorageAppSettings.messages.actions.telework.end
-    return `${baseMessage}${action}\n${values.additionalMessage}`
+    const baseMessage = values.inOffice
+      ? localStorageAppSettings.messages.office.end
+      : localStorageAppSettings.messages.telework.end
+    return `${baseMessage}\n${values.additionalMessage}`
   }
 
   /**
@@ -254,7 +247,6 @@ function App() {
         <PunchInForm
           punchInForm={punchInForm}
           handleSubmitPunchInForm={handleSubmitPunchInForm}
-          getWorkStatus={getWorkStatus}
           messageTemplates={localStorageAppSettings.messages}
         />
       </Grid.Col>

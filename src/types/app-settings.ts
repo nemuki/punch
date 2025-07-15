@@ -32,16 +32,6 @@ export type PunchInSettings = {
 }
 
 export type MessageTemplates = {
-  workTypes: WorkTypes
-  actions: Actions
-}
-
-export type WorkTypes = {
-  office: string
-  telework: string
-}
-
-export type Actions = {
   office: {
     start: string
     end: string
