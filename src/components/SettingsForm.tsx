@@ -29,7 +29,7 @@ export const SettingsForm = ({
   ] = useDisclosure(false)
 
   const appSettingsForm = useAppSettingsForm({
-    mode: 'uncontrolled',
+    mode: 'controlled',
     initialValues: localStorageAppSettings,
     validate: {
       conversations: {
