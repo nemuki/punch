@@ -18,13 +18,20 @@ import {
   SlackConversation,
   SlackConversations,
 } from './types'
-import { applicationConstants, isLocalStorageValid } from './utils'
+import {
+  type LocalStorageValidationResult,
+  applicationConstants,
+  isLocalStorageValid,
+  validateLocalStorage,
+} from './utils'
 
 function App() {
   const { authErrorMessage, authIsLoading, slackOauthToken } = useAuth()
 
   // State
   const [hasLocalStorageError, setHasLocalStorageError] = useState(false)
+  const [localStorageValidationResult, setLocalStorageValidationResult] =
+    useState<LocalStorageValidationResult | null>(null)
 
   const [localStorageAppSettings, setLocalStorageAppSettings] =
     useLocalStorage<AppSettings>({
@@ -48,9 +55,11 @@ function App() {
   })
 
   // Check for localStorage errors
-  if (!isLocalStorageValid(localStorageAppSettings)) {
+  const validationResult = validateLocalStorage(localStorageAppSettings)
+  if (!validationResult.isValid) {
     if (!hasLocalStorageError) {
       setHasLocalStorageError(true)
+      setLocalStorageValidationResult(validationResult)
     }
   }
 
@@ -211,8 +220,12 @@ function App() {
   }
 
   // Render
-  if (hasLocalStorageError) {
-    return <LocalStorageError />
+  if (
+    hasLocalStorageError &&
+    localStorageValidationResult &&
+    !localStorageValidationResult.isValid
+  ) {
+    return <LocalStorageError validationResult={localStorageValidationResult} />
   }
 
   if (Object.keys(slackOauthToken).length === 0) {
