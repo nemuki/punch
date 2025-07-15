@@ -165,8 +165,9 @@ function App() {
     }))
 
     if (values.punchIn === 'start') {
-      // ステータス絵文字を変更する
+      // 出社時の処理
       if (values.changeStatusEmoji) {
+        // ステータス絵文字を変更する
         if (values.inOffice) {
           updateEmoji({
             statusEmoji: localStorageAppSettings.status.emoji.office,
