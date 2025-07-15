@@ -31,15 +31,6 @@ export const SettingsForm = ({
   const appSettingsForm = useAppSettingsForm({
     mode: 'controlled',
     initialValues: localStorageAppSettings,
-    validate: {
-      conversations: {
-        channelId: (value) => {
-          if (!value) {
-            return 'チャンネルIDは必須です'
-          }
-        },
-      },
-    },
   })
 
   // Open settings automatically when needed
