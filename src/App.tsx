@@ -165,7 +165,7 @@ function App() {
     }))
 
     if (values.punchIn === 'start') {
-      // 出社時の処理
+      // 出勤時の処理
       if (values.changeStatusEmoji) {
         // ステータス絵文字を変更する
         if (values.inOffice) {
