@@ -10,6 +10,7 @@ export type {
   WorkStatus,
   PunchInSettings,
   StatusEmojiSetting,
+  MessageTemplates,
 } from './app-settings.ts'
 
 export type RawSlackConversations = RawSlackConversation[]

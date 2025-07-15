@@ -1,6 +1,8 @@
 export type AppSettings = {
   conversations: Conversations
   status: StatusEmojiSetting
+  messages: MessageTemplates
+  savedPunchInSettings?: PunchInSettings
 }
 
 export type Conversations = Conversation[]
@@ -27,4 +29,15 @@ export type PunchInSettings = {
   inOffice: boolean
   additionalMessage: string
   punchIn?: 'start' | 'end'
+}
+
+export type MessageTemplates = {
+  office: {
+    start: string
+    end: string
+  }
+  telework: {
+    start: string
+    end: string
+  }
 }

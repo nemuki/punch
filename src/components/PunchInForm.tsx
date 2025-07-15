@@ -14,13 +14,13 @@ import {
 import { UseFormReturnType } from '@mantine/form'
 import { FC } from 'react'
 import { useAuth } from '../hooks/useAuth.tsx'
-import { PunchInSettings } from '../types'
+import { MessageTemplates, PunchInSettings } from '../types'
 import { Clock } from './Clock.tsx'
 
 type Props = {
   punchInForm: UseFormReturnType<PunchInSettings>
   handleSubmitPunchInForm: (values: PunchInSettings) => void
-  getWorkStatus: (attendance: boolean) => string
+  messageTemplates: MessageTemplates
 }
 
 export const PunchInForm: FC<Props> = (props: Props) => {
@@ -42,13 +42,17 @@ export const PunchInForm: FC<Props> = (props: Props) => {
           description="デフォルトはテレワーク"
           label="出社時はチェック"
           key={props.punchInForm.key('inOffice')}
-          {...props.punchInForm.getInputProps('inOffice')}
+          {...props.punchInForm.getInputProps('inOffice', {
+            type: 'checkbox',
+          })}
         />
         <Checkbox
           description="出勤時は9時間後、退勤時は24時に削除されます"
           label="ステータス絵文字を変更する"
           key={props.punchInForm.key('changeStatusEmoji')}
-          {...props.punchInForm.getInputProps('changeStatusEmoji')}
+          {...props.punchInForm.getInputProps('changeStatusEmoji', {
+            type: 'checkbox',
+          })}
         />
         <Center>
           <Clock />
@@ -94,10 +98,16 @@ export const PunchInForm: FC<Props> = (props: Props) => {
               </Group>
             )}
             <Box>
-              <Text>
-                {props.getWorkStatus(props.punchInForm.values.inOffice)}
-                開始 / 終了します
+              <Text inherit style={{ whiteSpace: 'pre-wrap' }}>
+                {props.punchInForm.values.inOffice
+                  ? props.messageTemplates.office.start
+                  : props.messageTemplates.telework.start}
+                /
+                {props.punchInForm.values.inOffice
+                  ? props.messageTemplates.office.end
+                  : props.messageTemplates.telework.end}
               </Text>
+
               <Text inherit style={{ whiteSpace: 'pre-wrap' }}>
                 {props.punchInForm.values.additionalMessage}
               </Text>

@@ -37,6 +37,16 @@ const defaultAppSettings: AppSettings = {
       leave: '退勤しています',
     },
   },
+  messages: {
+    office: {
+      start: '業務開始します',
+      end: '業務終了します',
+    },
+    telework: {
+      start: 'テレワーク開始します',
+      end: 'テレワーク終了します',
+    },
+  },
 }
 
 export const applicationConstants = {
