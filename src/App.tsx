@@ -155,18 +155,16 @@ function App() {
     midnight.setHours(0, 0, 0, 0)
     const midnightUnixTime = Math.floor(midnight.getTime() / 1000)
 
-    if (values.punchIn === 'start') {
-      // 出勤時の処理 - 設定を保存
-      const punchInSettings = {
+    setLocalStorageAppSettings((prev) => ({
+      ...prev,
+      savedPunchInSettings: {
         changeStatusEmoji: values.changeStatusEmoji,
         inOffice: values.inOffice,
         additionalMessage: values.additionalMessage,
-      }
-      setLocalStorageAppSettings((prev) => ({
-        ...prev,
-        savedPunchInSettings: punchInSettings,
-      }))
+      },
+    }))
 
+    if (values.punchIn === 'start') {
       // ステータス絵文字を変更する
       if (values.changeStatusEmoji) {
         if (values.inOffice) {
