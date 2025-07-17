@@ -35,8 +35,17 @@ export const PunchInForm: FC<Props> = (props: Props) => {
         <Textarea
           label="追加メッセージ"
           description="追加のメッセージを入力できます"
+          resize="vertical"
           key={props.punchInForm.key('additionalMessage')}
           {...props.punchInForm.getInputProps('additionalMessage')}
+        />
+        <Checkbox
+          label="メッセージを送信する"
+          key={props.punchInForm.key('isSendMessage')}
+          defaultChecked={true}
+          {...props.punchInForm.getInputProps('isSendMessage', {
+            type: 'checkbox',
+          })}
         />
         <Checkbox
           description="デフォルトはテレワーク"

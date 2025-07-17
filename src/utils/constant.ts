@@ -34,7 +34,7 @@ const defaultAppSettings: AppSettings = {
     },
     text: {
       office: '出社しています',
-      telework: 'テレワーク',
+      telework: 'テレワークです',
       leave: '退勤しています',
     },
   },

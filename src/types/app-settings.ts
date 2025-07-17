@@ -28,6 +28,7 @@ export type WorkStatus = {
 export type PunchInSettings = {
   changeStatusEmoji: boolean
   inOffice: boolean
+  isSendMessage: boolean
   additionalMessage: string
   punchIn?: 'start' | 'end'
 }
