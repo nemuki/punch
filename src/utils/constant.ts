@@ -18,6 +18,7 @@ const slackOauthTokenLocalStorageKey: string = 'punch-slack-oauth-token'
 const appSettingsLocalStorageKey: string = 'punch-app-settings'
 
 const defaultAppSettings: AppSettings = {
+  version: 1,
   conversations: [
     {
       id: randomId(),

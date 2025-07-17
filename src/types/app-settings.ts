@@ -1,4 +1,5 @@
 export type AppSettings = {
+  version: number
   conversations: Conversations
   status: StatusEmojiSetting
   messages: MessageTemplates
