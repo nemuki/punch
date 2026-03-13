@@ -15,5 +15,5 @@ export const env = {
   SLACK_CLIENT_SECRET: getEnvValue('VITE_SLACK_CLIENT_SECRET'),
   SLACK_REDIRECT_URI: getEnvValue('VITE_SLACK_REDIRECT_URI'),
   USAGE_URL: getNullableEnvValue('VITE_USAGE_URL'),
-  MAINTAINER_URL: getNullableEnvValue('VITE_MAINTAINER_URL'),
+  INQUIRY_CHANNEL_URL: getNullableEnvValue('VITE_INQUIRY_CHANNEL_URL'),
 } as const
