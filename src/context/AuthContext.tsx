@@ -64,6 +64,12 @@ export const AuthProvider: FC<AuthProviderProps> = (
    * 初回アクセス時の処理
    */
   useEffect(() => {
+    // 開発モードの場合は処理をスキップ
+    if (env.DEV_MODE) {
+      setAuthIsLoading(false)
+      return
+    }
+
     // ログイン情報がない場合は何もしない
     if (
       oauthAuthorizationCode === null &&
@@ -86,6 +92,64 @@ export const AuthProvider: FC<AuthProviderProps> = (
 
     setAuthIsLoading(false)
   }, [oauthAuthorizationCode, localStorageSlackOauthToken])
+
+  // 開発モードの場合は認証をバイパス
+  if (env.DEV_MODE) {
+    const mockUserProfile: UsersProfileGetResponse = {
+      ok: true,
+      profile: {
+        title: 'Developer',
+        phone: '',
+        skype: '',
+        real_name: '開発者',
+        real_name_normalized: '開発者',
+        display_name: '開発者',
+        display_name_normalized: '開発者',
+        fields: undefined,
+        status_text: '',
+        status_emoji: '',
+        status_expiration: 0,
+        avatar_hash: '',
+        image_original: '',
+        is_custom_image: false,
+        first_name: '開発',
+        last_name: '者',
+        image_24: '',
+        image_32: '',
+        image_48: '',
+        image_72: '',
+        image_192: '',
+        image_512: '',
+        image_1024: '',
+        status_text_canonical: '',
+      },
+    }
+
+    const mockSlackOauthToken: SlackOauthToken = {
+      accessToken: 'dev-mode-token',
+      refreshToken: 'dev-mode-refresh-token',
+      expiresAt: Date.now() / 1000 + 86400, // 24時間後
+    }
+
+    const value: AuthContextProps = {
+      authIsLoading: false,
+      authErrorMessage: undefined,
+      slackOauthToken: mockSlackOauthToken,
+      userProfile: mockUserProfile,
+      handleLogout: () => {
+        console.log('開発モード: ログアウト処理は実行されません')
+      },
+      handleRemoveLocalStorageSlackOauthToken: () => {
+        console.log('開発モード: LocalStorage の削除は実行されません')
+      },
+    }
+
+    return (
+      <AuthContext.Provider value={value}>
+        {props.children}
+      </AuthContext.Provider>
+    )
+  }
 
   const handleSetError = (
     message: string,
