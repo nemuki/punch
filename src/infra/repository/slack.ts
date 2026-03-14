@@ -3,9 +3,9 @@ import {
   ConversationsHistoryResponse,
   ConversationsInfoResponse,
 } from '@slack/web-api'
-import { Conversations } from '../../types/app-settings.ts'
-import { RawSlackConversations, SlackConversations } from '../../types/index.ts'
 import { env } from '../../utils'
+import { Conversations } from '../../types'
+import { RawSlackConversations, SlackConversations } from '../../types'
 import {
   chatPostMessage,
   fetchConversationsHistory,

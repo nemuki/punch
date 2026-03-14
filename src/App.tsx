@@ -67,6 +67,8 @@ function App() {
   const punchInForm = usePunchInSettingForm({
     mode: 'controlled',
     initialValues: {
+      isSendMessage:
+        localStorageAppSettings.savedPunchInSettings?.isSendMessage ?? true,
       changeStatusEmoji:
         localStorageAppSettings.savedPunchInSettings?.changeStatusEmoji ??
         false,
@@ -167,6 +169,7 @@ function App() {
     setLocalStorageAppSettings((prev) => ({
       ...prev,
       savedPunchInSettings: {
+        isSendMessage: values.isSendMessage,
         changeStatusEmoji: values.changeStatusEmoji,
         inOffice: values.inOffice,
         additionalMessage: values.additionalMessage,
@@ -194,11 +197,13 @@ function App() {
         }
       }
 
-      postMessages({
-        conversations: filteredSlackConversations,
-        message: createPunchInStartMessage(values),
-        accessToken: slackOauthToken.accessToken,
-      })
+      if (values.isSendMessage) {
+        postMessages({
+          conversations: filteredSlackConversations,
+          message: createPunchInStartMessage(values),
+          accessToken: slackOauthToken.accessToken,
+        })
+      }
     } else if (values.punchIn === 'end') {
       // 退勤時の処理
       if (values.changeStatusEmoji) {
@@ -211,11 +216,13 @@ function App() {
         })
       }
 
-      postMessages({
-        conversations: filteredSlackConversations,
-        message: createPunchInEndMessage(values),
-        accessToken: slackOauthToken.accessToken,
-      })
+      if (values.isSendMessage) {
+        postMessages({
+          conversations: filteredSlackConversations,
+          message: createPunchInEndMessage(values),
+          accessToken: slackOauthToken.accessToken,
+        })
+      }
     }
   }
 

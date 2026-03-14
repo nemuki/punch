@@ -34,5 +34,6 @@ export const env = {
     : getEnvValue('VITE_SLACK_REDIRECT_URI'),
   USAGE_URL: getNullableEnvValue('VITE_USAGE_URL'),
   MAINTAINER_URL: getNullableEnvValue('VITE_MAINTAINER_URL'),
+  INQUIRY_CHANNEL_URL: getNullableEnvValue('VITE_INQUIRY_CHANNEL_URL'),
   DEV_MODE: isDevMode,
 } as const
